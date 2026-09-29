@@ -1,5 +1,5 @@
 FROM nginx:alpine
-# Force rebuild
+# Force rebuild v2
 
 COPY *.html /usr/share/nginx/html/
 COPY *.js /usr/share/nginx/html/
