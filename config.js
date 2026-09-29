@@ -1,6 +1,4 @@
 window.telegramConfig = {
-    BOT_TOKEN: localStorage.getItem('BOT_TOKEN') || '',
-    CHAT_ID: localStorage.getItem('CHAT_ID') || '8176081750'
+    BOT_TOKEN: 'TELEGRAM_BOT_TOKEN_PLACEHOLDER',
+    CHAT_ID: 'TELEGRAM_CHAT_ID_PLACEHOLDER'
 };
-window.BOT_TOKEN = localStorage.getItem('BOT_TOKEN') || '';
-window.CHAT_ID = localStorage.getItem('CHAT_ID') || '8176081750';

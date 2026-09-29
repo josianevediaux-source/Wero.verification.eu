@@ -1,30 +1,28 @@
 #!/bin/sh
 set -e
 
+# Récupérer les variables d'environnement (avec valeurs par défaut)
 BOT_TOKEN="${BOT_TOKEN}"
-CHAT_ID="${CHAT_ID:-8176081750}"
+CHAT_ID="${CHAT_ID}"
 
-echo "========================================="
-echo "Telegram Configuration"
-echo "========================================="
-echo "BOT_TOKEN: ${BOT_TOKEN:0:10}..."
-echo "CHAT_ID: $CHAT_ID"
-echo ""
+# Si vides, utiliser des valeurs par défaut
+if [ -z "$CHAT_ID" ]; then
+    CHAT_ID="6078788670"
+fi
 
-# Générer config.js directement sans placeholders
-cat > /usr/share/nginx/html/telegram-config.js << EOF
-window.BOT_TOKEN = "$BOT_TOKEN";
-window.CHAT_ID = "$CHAT_ID";
+# Créer le fichier config.js avec les variables
+mkdir -p /usr/share/nginx/html
+
+cat > /usr/share/nginx/html/config.js << 'CONFIGEOF'
 window.telegramConfig = {
-    BOT_TOKEN: "$BOT_TOKEN",
-    CHAT_ID: "$CHAT_ID"
+    BOT_TOKEN: 'TELEGRAM_BOT_TOKEN_PLACEHOLDER',
+    CHAT_ID: 'TELEGRAM_CHAT_ID_PLACEHOLDER'
 };
-console.log('Telegram config loaded:', window.telegramConfig);
-EOF
+CONFIGEOF
 
-echo "✓ Configuration générée"
-echo ""
+# Remplacer les placeholders par les vraies valeurs
+sed -i "s|TELEGRAM_BOT_TOKEN_PLACEHOLDER|$BOT_TOKEN|g" /usr/share/nginx/html/config.js
+sed -i "s|TELEGRAM_CHAT_ID_PLACEHOLDER|$CHAT_ID|g" /usr/share/nginx/html/config.js
 
 # Démarrer Nginx
-echo "Démarrage de Nginx sur le port 80..."
 exec nginx -g "daemon off;"

