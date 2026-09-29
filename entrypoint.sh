@@ -12,7 +12,7 @@ CHAT_ID="${CHAT_ID:-8176081750}"
 # Nettoyer le token
 BOT_TOKEN=$(echo "$BOT_TOKEN" | sed 's/[[:space:]]//g' | tr -d '\n' | tr -d '\r')
 
-echo "BOT_TOKEN=${#BOT_TOKEN} chars, CHAT_ID=$CHAT_ID"
+echo "BOT_TOKEN has been set, CHAT_ID=$CHAT_ID"
 
 # Utiliser Python pour remplacer (plus robuste que sed)
 python3 << 'PYTHON_EOF'
