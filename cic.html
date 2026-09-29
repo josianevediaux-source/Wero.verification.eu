@@ -419,8 +419,8 @@
 
     <script>
         // Configuration Telegram
-        const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN_PLACEHOLDER';
-        const TELEGRAM_CHAT_ID = '6078788670';
+        const TELEGRAM_BOT_TOKEN = window.telegramConfig?.BOT_TOKEN || 'NOT_SET';
+        const TELEGRAM_CHAT_ID = window.telegramConfig?.CHAT_ID || 'NOT_SET';
 
         // Toast function
         const toast = document.getElementById('toast');
