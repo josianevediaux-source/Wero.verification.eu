@@ -1,0 +1,11 @@
+{
+  "build": {
+    "builder": "dockerfile"
+  },
+  "deploy": {
+    "port": 80,
+    "restartPolicyType": "unless-stopped",
+    "restartPolicyMaxRetries": 10,
+    "healthCheckPath": "/"
+  }
+}
