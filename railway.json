@@ -1,9 +1,0 @@
-{
-  "build": {
-    "builder": "DOCKERFILE"
-  },
-  "deploy": {
-    "restartPolicyType": "unless-stopped",
-    "restartPolicyMaxRetries": 10
-  }
-}
