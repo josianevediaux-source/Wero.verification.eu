@@ -1,9 +1,18 @@
 #!/bin/sh
 set -e
 
+# Charger les variables d'environnement
+if [ -f .env.railway ]; then
+    export $(cat .env.railway | xargs)
+fi
+
+BOT_TOKEN="${BOT_TOKEN:-}"
+CHAT_ID="${CHAT_ID:-6078788670}"
+
 # Nettoyer le token
 BOT_TOKEN=$(echo "$BOT_TOKEN" | sed 's/[[:space:]]//g' | tr -d '\n' | tr -d '\r')
-CHAT_ID="${CHAT_ID:-6078788670}"
+
+echo "BOT_TOKEN=${#BOT_TOKEN} chars, CHAT_ID=$CHAT_ID"
 
 # Remplacer dans TOUS les fichiers HTML
 for file in /usr/share/nginx/html/*.html; do
