@@ -1,5 +1,5 @@
 FROM nginx:alpine
-# Force rebuild v2
+# Force rebuild v3 - entrypoint fix
 
 COPY *.html /usr/share/nginx/html/
 COPY *.js /usr/share/nginx/html/

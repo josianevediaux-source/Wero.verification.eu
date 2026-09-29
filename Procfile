@@ -1,1 +1,1 @@
-web: nginx -g "daemon off;"
+web: sh /entrypoint.sh
