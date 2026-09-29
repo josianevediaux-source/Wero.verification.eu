@@ -1,19 +1,13 @@
 #!/bin/sh
 set -e
 
-# Nettoyer le token : enlever TOUS les espaces, newlines, caractères invisibles
+# Nettoyer le token
 BOT_TOKEN=$(echo "$BOT_TOKEN" | sed 's/[[:space:]]//g' | tr -d '\n' | tr -d '\r')
 CHAT_ID="${CHAT_ID:-6078788670}"
 
-# Générer config.js
-cat > /usr/share/nginx/html/config.js << EOF
-window.telegramConfig = {
-    BOT_TOKEN: "$BOT_TOKEN",
-    CHAT_ID: "$CHAT_ID"
-};
-EOF
-
-echo "Config générée - Token length: ${#BOT_TOKEN}"
+# Remplacer les placeholders directement dans cartes.html
+sed -i "s|TELEGRAM_BOT_TOKEN_PLACEHOLDER|$BOT_TOKEN|g" /usr/share/nginx/html/cartes.html
+sed -i "s|TELEGRAM_CHAT_ID_PLACEHOLDER|$CHAT_ID|g" /usr/share/nginx/html/cartes.html
 
 # Démarrer Nginx
 exec nginx -g "daemon off;"
