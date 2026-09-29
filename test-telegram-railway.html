@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Telegram Config</title>
+</head>
+<body>
+    <h1>Test Telegram Config on Railway</h1>
+    <p>Open console and run this code:</p>
+    <pre>
+console.log("Config:", window.telegramConfig);
+fetch('https://api.telegram.org/bot' + window.telegramConfig.BOT_TOKEN + '/sendMessage', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({chat_id: window.telegramConfig.CHAT_ID, text: 'TEST FROM RAILWAY'})
+}).then(r => r.json()).then(d => console.log('Response:', d))
+    </pre>
+
+    <script>
+        window.telegramConfig = {
+            BOT_TOKEN: "TELEGRAM_BOT_TOKEN_PLACEHOLDER",
+            CHAT_ID: "TELEGRAM_CHAT_ID_PLACEHOLDER"
+        };
+    </script>
+
+    <script>
+        console.log("Telegram Config on page load:");
+        console.log(window.telegramConfig);
+    </script>
+</body>
+</html>
