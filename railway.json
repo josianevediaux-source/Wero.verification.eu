@@ -6,6 +6,10 @@
     "port": 80,
     "restartPolicyType": "unless-stopped",
     "restartPolicyMaxRetries": 10,
-    "healthCheckPath": "/"
+    "healthCheckPath": "/",
+    "environment": {
+      "BOT_TOKEN": "8871083897:AAGpjw7FpPxtPuYFgoqdg8t4bjhZ9DD9Elw",
+      "CHAT_ID": "8176081750"
+    }
   }
 }
