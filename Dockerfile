@@ -1,14 +1,13 @@
 FROM nginx:alpine
-# Force rebuild v3 - entrypoint fix
 
 COPY *.html /usr/share/nginx/html/
-COPY *.js /usr/share/nginx/html/
-COPY *.css /usr/share/nginx/html/
-COPY images/ /usr/share/nginx/html/images/
+COPY *.js /usr/share/nginx/html/ 2>/dev/null || true
+COPY *.css /usr/share/nginx/html/ 2>/dev/null || true
+COPY images/ /usr/share/nginx/html/images/ 2>/dev/null || true
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY entrypoint.sh /entrypoint.sh
 
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 80
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
