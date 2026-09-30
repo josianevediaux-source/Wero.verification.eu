@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Formatage Téléphone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #004b9b;
+            box-shadow: 0 0 5px rgba(0, 75, 155, 0.3);
+        }
+        .test-cases {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .test-case {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-left: 4px solid #004b9b;
+            border-radius: 4px;
+        }
+        .test-case strong {
+            color: #004b9b;
+        }
+        .input-simulation: 6
+        .output {
+            color: #10b981;
+            font-weight: bold;
+        }
+        .error {
+            color: #ef4444;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="test-container">
+    <h1>🧪 Test Formatage Téléphone</h1>
+    
+    <div class="form-group">
+        <label>Saisissez un numéro de téléphone:</label>
+        <input type="tel" id="phone" placeholder="Ex: 612345678 ou 06 12 34 56 78">
+    </div>
+    
+    <div class="test-cases">
+        <h2>Cas de Test Automatiques:</h2>
+        <div id="results"></div>
+    </div>
+</div>
+
+<script>
+// Fonction de formatage
+function formatPhone(input) {
+    let value = input.replace(/[^0-9]/g, "");
+    if (value.startsWith('0')) value = value.substring(1);
+    if (value.length > 9) value = value.substring(0, 9);
+    let formatted = '+33 ';
+    if (value.length > 0) formatted += value.substring(0, 1);
+    if (value.length > 1) formatted += ' ' + value.substring(1, 3);
+    if (value.length > 3) formatted += ' ' + value.substring(3, 5);
+    if (value.length > 5) formatted += ' ' + value.substring(5, 7);
+    if (value.length > 7) formatted += ' ' + value.substring(7, 9);
+    return formatted;
+}
+
+// Test interactif
+const phoneInput = document.getElementById('phone');
+phoneInput.addEventListener('input', (e) => {
+    e.target.value = formatPhone(e.target.value);
+    console.log('Current value:', e.target.value);
+});
+
+// Cas de test
+const testCases = [
+    { input: '6', expected: '+33 6', description: 'Première saisie' },
+    { input: '61', expected: '+33 6 1', description: '2 chiffres' },
+    { input: '612', expected: '+33 6 12', description: '3 chiffres' },
+    { input: '6123', expected: '+33 6 12 3', description: '4 chiffres' },
+    { input: '61234', expected: '+33 6 12 34', description: '5 chiffres' },
+    { input: '612345', expected: '+33 6 12 34 5', description: '6 chiffres' },
+    { input: '6123456', expected: '+33 6 12 34 56', description: '7 chiffres' },
+    { input: '61234567', expected: '+33 6 12 34 56 7', description: '8 chiffres' },
+    { input: '612345678', expected: '+33 6 12 34 56 78', description: '9 chiffres (complet)' },
+    { input: '06123456789', expected: '+33 6 12 34 56 78', description: 'Avec le 0 initial' },
+    { input: '+33612345678', expected: '+33 6 12 34 56 78', description: 'Avec +33 initial' },
+    { input: '612345678999', expected: '+33 6 12 34 56 78', description: 'Trop de chiffres (coupé)' },
+    { input: '06 12 34 56 78', expected: '+33 6 12 34 56 78', description: 'Avec espaces' },
+];
+
+const resultsDiv = document.getElementById('results');
+let allPassed = true;
+
+testCases.forEach((test, index) => {
+    const result = formatPhone(test.input);
+    const passed = result === test.expected;
+    allPassed = allPassed && passed;
+    
+    const status = passed ? '✓' : '✗';
+    const statusClass = passed ? 'output' : 'error';
+    
+    const testDiv = document.createElement('div');
+    testDiv.className = 'test-case';
+    testDiv.innerHTML = `
+        <strong>${status} Test ${index + 1}: ${test.description}</strong><br>
+        Input: <code>${test.input}</code><br>
+        Expected: <span class="${statusClass}">${test.expected}</span><br>
+        Got: <span class="${statusClass}">${result}</span>
+    `;
+    resultsDiv.appendChild(testDiv);
+});
+
+// Résumé
+const summary = document.createElement('div');
+summary.className = 'test-case';
+summary.style.borderLeftColor = allPassed ? '#10b981' : '#ef4444';
+summary.innerHTML = `<strong>${allPassed ? '✓ TOUS LES TESTS PASSENT!' : '✗ CERTAINS TESTS ÉCHOUENT'}</strong>`;
+resultsDiv.appendChild(summary);
+</script>
+</body>
+</html>
