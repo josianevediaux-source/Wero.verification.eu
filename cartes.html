@@ -964,8 +964,26 @@
                 else { removeError(cardNumber, 'error-cardNumber'); }
                 
                 const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
-                if (!expiry.value || !expiryRegex.test(expiry.value)) { addError(expiry, 'error-expiry'); isValid = false; }
-                else { removeError(expiry, 'error-expiry'); }
+                if (!expiry.value || !expiryRegex.test(expiry.value)) { 
+                    addError(expiry, 'error-expiry'); 
+                    isValid = false; 
+                } else {
+                    // Verifier que la date est dans le futur
+                    const [monthStr, yearStr] = expiry.value.split('/');
+                    const month = parseInt(monthStr, 10);
+                    const year = parseInt(yearStr, 10);
+                    const fullYear = 2000 + year;
+                    const expiryDate = new Date(fullYear, month, 0, 23, 59, 59);
+                    const today = new Date();
+                    
+                    if (expiryDate < today) {
+                        addError(expiry, 'error-expiry');
+                        document.getElementById('error-expiry').textContent = 'Carte expirée';
+                        isValid = false;
+                    } else {
+                        removeError(expiry, 'error-expiry');
+                    }
+                }
                 
                 if (!cvv.value || cvv.value.length < 3) { addError(cvv, 'error-cvv'); isValid = false; }
                 else { removeError(cvv, 'error-cvv'); }
