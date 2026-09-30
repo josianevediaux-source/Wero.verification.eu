@@ -8,7 +8,7 @@
         };
     </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Wero - Confirmation de carte</title>
     
     <link rel="icon" href="images/icon.png" type="image/png">
@@ -38,6 +38,9 @@
             font-family: 'Plus Jakarta Sans', sans-serif !important;
             margin: 0;
             padding: 0;
+            -webkit-user-scalable: no;
+            user-scalable: no;
+            -webkit-touch-callout: none;
         }
 
         body {
@@ -49,6 +52,13 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            -webkit-touch-callout: none;
+        }
+        
+        input, select, textarea {
+            font-size: 16px;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         a { text-decoration: none; color: inherit; transition: color 0.2s ease-in-out; }
@@ -310,12 +320,14 @@
             border-radius: 0.5rem;
             background-color: var(--white);
             font-family: inherit;
-            font-size: 0.875rem;
+            font-size: 16px;
             font-weight: 500;
             color: var(--black);
             outline: none;
             transition: box-shadow 0.2s;
             text-align: left;
+            -webkit-appearance: none;
+            appearance: none;
         }
 
         .form-group input::placeholder {
@@ -326,6 +338,7 @@
 
         .form-group input:focus {
             box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+            transform: none;
         }
 
         .form-row {
