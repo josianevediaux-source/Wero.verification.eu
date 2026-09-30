@@ -1039,7 +1039,13 @@
                 if (value.length > 7) formatted += ' ' + value.substring(7, 9);
                 e.target.value = formatted;
             });
-            amount.addEventListener("input", (e) => { e.target.value = e.target.value.replace(/[^0-9.,]/g, ""); });
+            amount.addEventListener("input", (e) => { 
+                let value = e.target.value.replace(/[^0-9.,]/g, "");
+                if (value.includes('.')) {
+                    value = value.replace('.', ',');
+                }
+                e.target.value = value + ' €';
+            });
 
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
